@@ -17,7 +17,6 @@ export const Transactions: React.FC = () => {
   const [currency, setCurrency] = useState('XOF');
   const [callbackUrl, setCallbackUrl] = useState('https://example.com/callback');
   const [customerId, setCustomerId] = useState('');
-  const [retrieveId, setRetrieveId] = useState('');
 
   useEffect(() => {
     loadTransactions();
@@ -71,7 +70,6 @@ export const Transactions: React.FC = () => {
     const result = await TransactionService.retrieveTransaction(id);
     if (result.success) {
       setMessage({ type: 'success', text: '✅ Transaction récupérée' });
-      setRetrieveId(id.toString());
     } else {
       setMessage({ type: 'error', text: `Erreur: ${result.error}` });
     }

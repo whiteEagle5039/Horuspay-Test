@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, FormInput, Alert, Card } from '../components';
-import { configureHorusPay, getHorusPayConfig, saveHorusPayConfig, isHorusPayConfigured } from '../config/horuspay';
+import { getHorusPayConfig, saveHorusPayConfig, isHorusPayConfigured } from '../config/horuspay';
 import styles from './Setup.module.css';
 
 export const Setup: React.FC = () => {

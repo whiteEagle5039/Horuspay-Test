@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Card, Button } from '../components';
+import { Card } from '../components';
 import styles from './Dashboard.module.css';
 
 interface MenuItemProps {

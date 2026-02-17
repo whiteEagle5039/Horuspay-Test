@@ -8,7 +8,7 @@ import {
   Customers,
   Payouts,
 } from './pages';
-import { isHorusPayConfigured, getHorusPayConfig, configureHorusPay } from './config/horuspay';
+import { getHorusPayConfig, configureHorusPay } from './config/horuspay';
 import './App.css';
 
 function App() {
