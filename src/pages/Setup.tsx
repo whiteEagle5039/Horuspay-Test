@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, FormInput, Alert } from '../components';
-import { getHorusPayConfig, saveHorusPayConfig, isHorusPayConfigured } from '../config/horuspay';
+import { getHorusPayConfig } from '../config/horuspay';
+import { useConfig } from '../config/ConfigContext';
 import styles from './Setup.module.css';
 
 type Env = 'sandbox' | 'production' | 'development';
@@ -14,12 +15,12 @@ const ENV_OPTIONS: { value: Env; label: string; hint: string }[] = [
 
 export const Setup: React.FC = () => {
   const navigate = useNavigate();
+  const { isConfigured: configured, setConfiguration } = useConfig();
   const [apiKey, setApiKey]           = useState('');
   const [environment, setEnvironment] = useState<Env>('sandbox');
   const [accountId, setAccountId]     = useState('');
   const [message, setMessage]         = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [loading, setLoading]         = useState(false);
-  const [configured]                  = useState(() => isHorusPayConfigured());
 
   useEffect(() => {
     const config = getHorusPayConfig();
@@ -41,7 +42,7 @@ export const Setup: React.FC = () => {
     }
 
     try {
-      saveHorusPayConfig({ apiKey: apiKey.trim(), environment, accountId: accountId.trim() });
+      setConfiguration({ apiKey: apiKey.trim(), environment, accountId: accountId.trim() });
       setMessage({ type: 'success', text: 'Configuration sauvegardée avec succès !' });
       setTimeout(() => navigate('/'), 1500);
     } catch (error: any) {

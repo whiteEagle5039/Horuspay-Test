@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
 import { Layout } from './components/Layout';
 import {
   Dashboard,
@@ -8,30 +7,12 @@ import {
   Customers,
   Payouts,
 } from './pages';
-import { getHorusPayConfig, configureHorusPay } from './config/horuspay';
+import { ConfigProvider, useConfig } from './config/ConfigContext';
 import './App.css';
 
-function App() {
-  const [isConfigured, setIsConfigured] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const config = getHorusPayConfig();
-    if (config.apiKey && config.accountId) {
-      configureHorusPay(config);
-      setIsConfigured(true);
-    }
-    setLoading(false);
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="loading-screen">
-        <div className="loading-spinner" />
-        <span className="loading-text">Chargement...</span>
-      </div>
-    );
-  }
+function AppRoutes() {
+  const { isConfigured } = useConfig();
+  console.debug('[AppRoutes] isConfigured:', isConfigured);
 
   return (
     <Router>
@@ -55,6 +36,14 @@ function App() {
         </Routes>
       </Layout>
     </Router>
+  );
+}
+
+function App() {
+  return (
+    <ConfigProvider>
+      <AppRoutes />
+    </ConfigProvider>
   );
 }
 
