@@ -1,0 +1,91 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.header h1 {
+  margin: 0 0 8px 0;
+  font-size: 32px;
+  color: #333;
+}
+
+.header p {
+  margin: 0;
+  color: #666;
+  font-size: 16px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.menuItem {
+  display: flex;
+  gap: 16px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.menuItem:hover {
+  background-color: #f8f9fa;
+}
+
+.icon {
+  font-size: 32px;
+  min-width: 50px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.content {
+  flex: 1;
+}
+
+.content h3 {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.content p {
+  margin: 0;
+  font-size: 13px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.section {
+  margin: 40px 0;
+}
+
+.resourcesList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.resourcesList a {
+  color: #007bff;
+  text-decoration: none;
+  padding: 12px;
+  border-radius: 4px;
+  background-color: #f8f9fa;
+  transition: background-color 0.2s;
+}
+
+.resourcesList a:hover {
+  background-color: #e9ecef;
+  text-decoration: underline;
+}
