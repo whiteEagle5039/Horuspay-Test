@@ -1,41 +1,91 @@
+/* FormInput — Liquid Glass */
+
 .formGroup {
-  margin-bottom: 16px;
   display: flex;
   flex-direction: column;
+  gap: 6px;
 }
 
 .label {
-  font-size: 14px;
-  font-weight: 500;
-  margin-bottom: 6px;
-  color: #333;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
 }
 
 .input {
-  padding: 10px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 11px 14px;
+  font-family: 'DM Sans', system-ui, sans-serif;
   font-size: 14px;
-  transition: border-color 0.3s, box-shadow 0.3s;
-  font-family: inherit;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 12px;
+  outline: none;
+  transition:
+    background 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.12);
+  width: 100%;
+}
+
+.input::placeholder {
+  color: rgba(255, 255, 255, 0.20);
 }
 
 .input:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  background: rgba(255, 255, 255, 0.11);
+  border-color: rgba(59, 130, 246, 0.60);
+  box-shadow:
+    0 0 0 3px rgba(59, 130, 246, 0.15),
+    inset 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
+/* Password type - monospace feel */
+.input[type="password"] {
+  letter-spacing: 0.12em;
+}
+
+/* ---- Error state ---- */
 .inputError {
-  border-color: #dc3545;
+  border-color: rgba(244, 63, 94, 0.50) !important;
+  background: rgba(244, 63, 94, 0.06) !important;
 }
 
 .inputError:focus {
-  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+  border-color: rgba(244, 63, 94, 0.70) !important;
+  box-shadow:
+    0 0 0 3px rgba(244, 63, 94, 0.15),
+    inset 0 2px 4px rgba(0, 0, 0, 0.08) !important;
 }
 
 .error {
-  color: #dc3545;
-  font-size: 12px;
-  margin-top: 4px;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 11.5px;
+  color: rgba(252, 165, 165, 0.90);
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.error::before {
+  content: '!';
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(244, 63, 94, 0.25);
+  border: 1px solid rgba(244, 63, 94, 0.35);
+  font-size: 9px;
+  font-weight: 700;
+  flex-shrink: 0;
 }

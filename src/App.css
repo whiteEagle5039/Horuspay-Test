@@ -1,32 +1,34 @@
-/* App Styles */
+/* App.css — Liquid Glass override */
 
-:root {
-  --primary-color: #007bff;
-  --secondary-color: #6c757d;
-  --danger-color: #dc3545;
-  --success-color: #28a745;
-  --warning-color: #ffc107;
-  --info-color: #17a2b8;
-  --light-bg: #f8f9fa;
-  --border-color: #e0e0e0;
-  --text-color: #333;
-  --text-muted: #666;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-#root {
+/* Loading screen */
+.loading-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   height: 100vh;
   width: 100%;
+  background: #050816;
+  flex-direction: column;
+  gap: 16px;
 }
 
-a {
-  color: var(--primary-color);
-  text-decoration: none;
+.loading-spinner {
+  width: 44px;
+  height: 44px;
+  border: 2px solid rgba(255,255,255,0.08);
+  border-top-color: rgba(59,130,246,0.8);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
-a:hover {
-  text-decoration: underline;
+.loading-text {
+  font-family: 'Syne', system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.04em;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }

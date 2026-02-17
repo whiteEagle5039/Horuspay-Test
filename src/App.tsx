@@ -16,7 +16,6 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Try to restore configuration from localStorage
     const config = getHorusPayConfig();
     if (config.apiKey && config.accountId) {
       configureHorusPay(config);
@@ -27,10 +26,9 @@ function App() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <div style={{ textAlign: 'center' }}>
-          <h2>🎯 Chargement...</h2>
-        </div>
+      <div className="loading-screen">
+        <div className="loading-spinner" />
+        <span className="loading-text">Chargement...</span>
       </div>
     );
   }

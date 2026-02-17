@@ -1,16 +1,25 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, FormInput, Alert, Card } from '../components';
+import { Button, FormInput, Alert } from '../components';
 import { getHorusPayConfig, saveHorusPayConfig, isHorusPayConfigured } from '../config/horuspay';
 import styles from './Setup.module.css';
 
+type Env = 'sandbox' | 'production' | 'development';
+
+const ENV_OPTIONS: { value: Env; label: string; hint: string }[] = [
+  { value: 'sandbox',     label: 'Sandbox',     hint: 'Test' },
+  { value: 'production',  label: 'Production',  hint: 'Live' },
+  { value: 'development', label: 'Dev',          hint: 'Local' },
+];
+
 export const Setup: React.FC = () => {
   const navigate = useNavigate();
-  const [apiKey, setApiKey] = useState('');
-  const [environment, setEnvironment] = useState<'sandbox' | 'production' | 'development'>('sandbox');
-  const [accountId, setAccountId] = useState('');
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [apiKey, setApiKey]           = useState('');
+  const [environment, setEnvironment] = useState<Env>('sandbox');
+  const [accountId, setAccountId]     = useState('');
+  const [message, setMessage]         = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [loading, setLoading]         = useState(false);
+  const [configured]                  = useState(() => isHorusPayConfigured());
 
   useEffect(() => {
     const config = getHorusPayConfig();
@@ -32,18 +41,11 @@ export const Setup: React.FC = () => {
     }
 
     try {
-      saveHorusPayConfig({
-        apiKey: apiKey.trim(),
-        environment,
-        accountId: accountId.trim(),
-      });
-
-      setMessage({ type: 'success', text: '✅ Configuration sauvegardée avec succès!' });
-      setTimeout(() => {
-        navigate('/');
-      }, 1500);
+      saveHorusPayConfig({ apiKey: apiKey.trim(), environment, accountId: accountId.trim() });
+      setMessage({ type: 'success', text: 'Configuration sauvegardée avec succès !' });
+      setTimeout(() => navigate('/'), 1500);
     } catch (error: any) {
-      setMessage({ type: 'error', text: `❌ Erreur: ${error.message}` });
+      setMessage({ type: 'error', text: `Erreur : ${error.message}` });
     } finally {
       setLoading(false);
     }
@@ -51,14 +53,29 @@ export const Setup: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <Card title="Configuration HorusPay">
+
+      {/* Header */}
+      <div className={styles.pageHeader}>
+        <div className={styles.pageEyebrow}>Configuration</div>
+        <h1 className={styles.pageTitle}>Paramètres HorusPay</h1>
+        <p className={styles.pageSubtitle}>Renseignez vos clés pour commencer à tester le SDK</p>
+      </div>
+
+      {/* Configured badge */}
+      {configured && (
+        <div className={styles.statusBadge}>
+          <span className={styles.statusDot} />
+          SDK configuré et actif
+        </div>
+      )}
+
+      {/* Main card */}
+      <div className={styles.card}>
+        <h3 className={styles.cardTitle}>Clés & Environnement</h3>
+
         <form onSubmit={handleSave} className={styles.form}>
           {message && (
-            <Alert
-              type={message.type}
-              message={message.text}
-              onClose={() => setMessage(null)}
-            />
+            <Alert type={message.type} message={message.text} onClose={() => setMessage(null)} />
           )}
 
           <FormInput
@@ -70,18 +87,34 @@ export const Setup: React.FC = () => {
             required
           />
 
+          {/* Environment pill selector */}
           <div className={styles.formGroup}>
             <label className={styles.label}>Environnement</label>
-            <select
-              value={environment}
-              onChange={(e) => setEnvironment(e.target.value as any)}
-              className={styles.select}
-            >
-              <option value="sandbox">Sandbox (Test)</option>
-              <option value="production">Production</option>
-              <option value="development">Development</option>
-            </select>
+            <div className={styles.envSelector}>
+              {ENV_OPTIONS.map(({ value, label, hint }) => {
+                const isActive = environment === value;
+                const variantClass =
+                  value === 'sandbox'     ? styles.envOptionSandbox :
+                  value === 'production'  ? styles.envOptionProduction :
+                  styles.envOptionDevelopment;
+
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setEnvironment(value)}
+                    className={`${styles.envOption} ${variantClass} ${isActive ? styles.envActive : ''}`}
+                  >
+                    <span className={styles.envDot} />
+                    {label}
+                    <span style={{ fontSize: '10px', opacity: 0.6 }}>{hint}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
+
+          <div className={styles.formDivider} />
 
           <FormInput
             label="ID du Compte"
@@ -92,43 +125,36 @@ export const Setup: React.FC = () => {
             required
           />
 
-          <Button type="submit" fullWidth loading={loading}>
-            Sauvegarder la Configuration
-          </Button>
-
-          {isHorusPayConfigured() && (
-            <Button
-              type="button"
-              variant="secondary"
-              fullWidth
-              onClick={() => navigate('/')}
-              style={{ marginTop: '8px' }}
-            >
-              Retour au Dashboard
+          <div className={styles.actions}>
+            <Button type="submit" fullWidth loading={loading}>
+              Sauvegarder la Configuration
             </Button>
-          )}
+            {configured && (
+              <Button type="button" variant="secondary" fullWidth onClick={() => navigate('/')}>
+                Retour au Dashboard
+              </Button>
+            )}
+          </div>
         </form>
-      </Card>
+      </div>
 
+      {/* Info box */}
       <div className={styles.info}>
-        <h4>📝 Notes d'utilisation</h4>
+        <h4>Notes d'utilisation</h4>
         <ul>
           <li>La clé API est stockée localement dans votre navigateur</li>
-          <li>Assurez-vous d'utiliser une clé de test en environnement sandbox</li>
-          <li>Ne partagez jamais votre clé API</li>
+          <li>Utilisez toujours une clé de test en environnement Sandbox</li>
+          <li>Ne partagez jamais votre clé API de Production</li>
           <li>
             Consultez la{' '}
-            <a
-              href="https://docs.horuspay.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href="https://docs.horuspay.com" target="_blank" rel="noopener noreferrer">
               documentation API
             </a>{' '}
             pour plus de détails
           </li>
         </ul>
       </div>
+
     </div>
   );
 };
