@@ -249,8 +249,8 @@
 }
 
 .emptyIcon {
-  font-size: 40px;
-  opacity: 0.20;
+  opacity: 0.15;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .emptyText {

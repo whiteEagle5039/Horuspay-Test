@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Button, FormInput, Alert } from '../components';
+import { IconSend, IconRefresh } from '../components/Icons';
 import * as PayoutService from '../services/payoutService';
 import type { Payout, PayoutData } from '../types';
 import styles from './Payouts.module.css';
@@ -169,13 +170,13 @@ export const Payouts: React.FC = () => {
           <div className={styles.panelHeader}>
             <h3 className={styles.panelTitle}>Tous les transferts</h3>
             <Button onClick={loadPayouts} loading={loading} variant="secondary" size="small">
-              ↻ Rafraîchir
+              <IconRefresh size={14} /> Rafraîchir
             </Button>
           </div>
           <div className={styles.panelBody}>
             {payouts.length === 0 ? (
               <div className={styles.empty}>
-                <div className={styles.emptyIcon}>💸</div>
+                <div className={styles.emptyIcon}><IconSend size={40} /></div>
                 <p className={styles.emptyText}>Aucun transfert trouvé</p>
               </div>
             ) : (

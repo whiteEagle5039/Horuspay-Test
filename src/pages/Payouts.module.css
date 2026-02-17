@@ -239,7 +239,10 @@
   text-align: center;
 }
 
-.emptyIcon  { font-size: 40px; opacity: 0.20; }
+.emptyIcon {
+  opacity: 0.15;
+  color: rgba(255, 255, 255, 0.5);
+}
 
 .emptyText {
   font-family: 'DM Sans', system-ui, sans-serif;

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Button, FormInput, Alert } from '../components';
+import { IconUsers, IconRefresh } from '../components/Icons';
 import * as CustomerService from '../services/customerService';
 import type { Customer, CustomerData } from '../types';
 import styles from './Customers.module.css';
@@ -114,13 +115,13 @@ export const Customers: React.FC = () => {
           <div className={styles.panelHeader}>
             <h3 className={styles.panelTitle}>Tous les clients</h3>
             <Button onClick={loadCustomers} loading={loading} variant="secondary" size="small">
-              ↻ Rafraîchir
+              <IconRefresh size={14} /> Rafraîchir
             </Button>
           </div>
           <div className={styles.panelBody}>
             {customers.length === 0 ? (
               <div className={styles.empty}>
-                <div className={styles.emptyIcon}>👥</div>
+                <div className={styles.emptyIcon}><IconUsers size={40} /></div>
                 <p className={styles.emptyText}>Aucun client trouvé</p>
               </div>
             ) : (

@@ -1,10 +1,12 @@
+import { type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { IconCreditCard, IconUsers, IconSend, IconSettings, IconChevronRight, IconBook, IconLayout, IconGithub, IconExternalLink } from '../components/Icons';
 import styles from './Dashboard.module.css';
 
 interface MenuItemProps {
   title: string;
   description: string;
-  icon: string;
+  icon: ReactNode;
   path: string;
   accent: string;
   onClick: (path: string) => void;
@@ -15,7 +17,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ title, description, icon, path, acc
     <div className={styles.menuCard} onClick={() => onClick(path)}>
       <div
         className={styles.menuIcon}
-        style={{ boxShadow: `inset 0 1px 0 rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.2), 0 0 20px ${accent}22` }}
+        style={{ boxShadow: `inset 0 1px 0 rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.2), 0 0 20px ${accent}22`, color: accent }}
       >
         {icon}
       </div>
@@ -23,7 +25,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ title, description, icon, path, acc
         <h3>{title}</h3>
         <p>{description}</p>
       </div>
-      <span className={styles.menuArrow}>→</span>
+      <span className={styles.menuArrow}><IconChevronRight size={18} /></span>
     </div>
   );
 };
@@ -35,28 +37,28 @@ export const Dashboard: React.FC = () => {
     {
       title: 'Transactions',
       description: 'Créer, lister et gérer les transactions de paiement',
-      icon: '💳',
+      icon: <IconCreditCard size={24} />,
       path: '/transactions',
       accent: '#3B82F6',
     },
     {
       title: 'Clients',
       description: 'Gérer les informations et profils des clients',
-      icon: '👥',
+      icon: <IconUsers size={24} />,
       path: '/customers',
       accent: '#8B5CF6',
     },
     {
       title: 'Transferts',
       description: 'Effectuer des transferts et payouts mobiles',
-      icon: '💸',
+      icon: <IconSend size={24} />,
       path: '/payouts',
       accent: '#10B981',
     },
     {
       title: 'Configuration',
       description: 'Configurer les clés API et les paramètres',
-      icon: '⚙️',
+      icon: <IconSettings size={24} />,
       path: '/setup',
       accent: '#F59E0B',
     },
@@ -67,16 +69,19 @@ export const Dashboard: React.FC = () => {
       label: 'Documentation API HorusPay',
       url: 'https://docs.horuspay.com',
       color: '#3B82F6',
+      icon: <IconBook size={16} />,
     },
     {
       label: 'Dashboard HorusPay',
       url: 'https://dashboard.horuspay.com',
       color: '#8B5CF6',
+      icon: <IconLayout size={16} />,
     },
     {
       label: 'GitHub HorusPay',
       url: 'https://github.com/horuspay',
       color: '#10B981',
+      icon: <IconGithub size={16} />,
     },
   ];
 
@@ -109,11 +114,13 @@ export const Dashboard: React.FC = () => {
               className={styles.resourceItem}
             >
               <span
-                className={styles.resourceDot}
-                style={{ background: r.color, boxShadow: `0 0 8px ${r.color}88` }}
-              />
+                className={styles.resourceIcon}
+                style={{ color: r.color }}
+              >
+                {r.icon}
+              </span>
               {r.label}
-              <span className={styles.resourceArrow}>↗</span>
+              <span className={styles.resourceArrow}><IconExternalLink size={13} /></span>
             </a>
           ))}
         </div>

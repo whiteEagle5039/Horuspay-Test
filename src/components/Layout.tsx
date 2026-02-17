@@ -1,12 +1,13 @@
 import { Link, useLocation } from 'react-router-dom';
+import { IconHome, IconCreditCard, IconUsers, IconSend, IconSettings, IconHexagon, IconExternalLink } from './Icons';
 import styles from './Layout.module.css';
 
 const navItems = [
-  { to: '/',             icon: '◈',  label: 'Dashboard'    },
-  { to: '/transactions', icon: '↔',  label: 'Transactions'  },
-  { to: '/customers',    icon: '⊙',  label: 'Clients'       },
-  { to: '/payouts',      icon: '↑',  label: 'Transferts'    },
-  { to: '/setup',        icon: '◎',  label: 'Configuration' },
+  { to: '/',             icon: <IconHome size={17} />,       label: 'Dashboard'    },
+  { to: '/transactions', icon: <IconCreditCard size={17} />, label: 'Transactions'  },
+  { to: '/customers',    icon: <IconUsers size={17} />,      label: 'Clients'       },
+  { to: '/payouts',      icon: <IconSend size={17} />,       label: 'Transferts'    },
+  { to: '/setup',        icon: <IconSettings size={17} />,   label: 'Configuration' },
 ];
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -19,7 +20,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         {/* Brand */}
         <div className={styles.logo}>
           <div className={styles.logoMark}>
-            <div className={styles.logoBadge}>⬡</div>
+            <div className={styles.logoBadge}><IconHexagon size={18} /></div>
             <h2>HorusPay</h2>
           </div>
           <p>Test SDK</p>
@@ -49,7 +50,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             rel="noopener noreferrer"
             className={styles.footerLink}
           >
-            Documentation ↗
+            Documentation <IconExternalLink size={12} />
           </a>
         </div>
 
