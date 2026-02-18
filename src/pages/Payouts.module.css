@@ -389,6 +389,53 @@
   border-radius: 10px;
 }
 
+/* ---- Status classes ---- */
+.statusApproved { background: rgba(16,185,129,0.15); color: #6EE7B7; border: 1px solid rgba(16,185,129,0.25); }
+.statusRefused  { background: rgba(244,63,94,0.15);  color: #FDA4AF; border: 1px solid rgba(244,63,94,0.25);  }
+.statusPending  { background: rgba(245,158,11,0.15); color: #FCD34D; border: 1px solid rgba(245,158,11,0.25); }
+
+/* ---- Row ---- */
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+/* ---- Label ---- */
+.label {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.07em; text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+}
+
+/* ---- Boutons inline ---- */
+.actionBtn, .actionBtnGreen, .actionBtnRed {
+  padding: 5px 11px; font-size: 11.5px;
+  font-family: 'DM Sans', system-ui, sans-serif; font-weight: 500;
+  border-radius: 8px; border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.65);
+  cursor: pointer; transition: all 130ms ease; white-space: nowrap;
+}
+.actionBtn:hover      { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.9); }
+.actionBtnGreen       { border-color: rgba(16,185,129,0.3); color: #6EE7B7; background: rgba(16,185,129,0.08); }
+.actionBtnGreen:hover { background: rgba(16,185,129,0.18); }
+.actionBtnRed         { border-color: rgba(244,63,94,0.3); color: #FDA4AF; background: rgba(244,63,94,0.08); }
+.actionBtnRed:hover   { background: rgba(244,63,94,0.18); }
+
+/* ---- Info/Warning boxes ---- */
+.infoBox {
+  padding: 12px 16px; background: rgba(59,130,246,0.08);
+  border: 1px solid rgba(59,130,246,0.20); border-radius: 10px;
+  font-size: 13px; color: rgba(147,197,253,0.85); line-height: 1.5;
+}
+.infoBox code { font-family: 'Fira Code', monospace; font-size: 12px; color: #93C5FD; background: rgba(59,130,246,0.15); padding: 1px 5px; border-radius: 4px; }
+.warningBox {
+  padding: 12px 16px; background: rgba(244,63,94,0.08);
+  border: 1px solid rgba(244,63,94,0.22); border-radius: 10px;
+  font-size: 13px; color: rgba(253,164,175,0.85); line-height: 1.5;
+}
+.warningBox code { font-family: 'Fira Code', monospace; font-size: 12px; color: #FDA4AF; background: rgba(244,63,94,0.12); padding: 1px 5px; border-radius: 4px; }
+
+/* ---- Divider line ---- */
+.dividerLine { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.10), transparent); margin: 4px 0; }
+
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(18px); }
   to   { opacity: 1; transform: translateY(0);    }

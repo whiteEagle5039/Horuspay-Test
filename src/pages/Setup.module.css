@@ -344,6 +344,38 @@
   border-bottom-color: rgba(96,165,250,0.55);
 }
 
+/* ---- Tabs (pour AuthPage) ---- */
+.tabsWrap {
+  display: flex;
+  gap: 4px;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 16px;
+  padding: 5px;
+  width: fit-content;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+.tabBtn {
+  padding: 8px 18px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: rgba(255,255,255,0.42);
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  border-radius: 11px;
+  transition: all 180ms ease;
+}
+.tabBtn:hover { color: rgba(255,255,255,0.72); background: rgba(255,255,255,0.06); }
+.tabActive {
+  color: rgba(255,255,255,0.92);
+  background: rgba(255,255,255,0.13);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.20);
+}
+
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(18px); }
   to   { opacity: 1; transform: translateY(0);    }

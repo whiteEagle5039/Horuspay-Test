@@ -27,7 +27,7 @@ export const Setup: React.FC = () => {
     if (config.apiKey) {
       setApiKey(config.apiKey);
       setEnvironment(config.environment);
-      setAccountId(config.accountId);
+      setAccountId(String(config.accountId));
     }
   }, []);
 
