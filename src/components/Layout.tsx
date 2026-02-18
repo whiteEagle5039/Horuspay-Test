@@ -14,6 +14,11 @@ const IconLock = ({ size = 17 }: { size?: number }) => (
     <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
   </svg>
 );
+const IconBriefcase = ({ size = 17 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="12"/>
+  </svg>
+);
 
 const ENV_COLORS: Record<string, string> = {
   sandbox:     '#60A5FA',
@@ -34,8 +39,9 @@ const NAV_SECTIONS = [
   {
     label: 'Avancé',
     items: [
-      { to: '/auth',     icon: <IconLock size={17} />, label: 'Authentification' },
-      { to: '/webhooks', icon: <IconKey size={17} />,  label: 'Webhooks & Keys'  },
+      { to: '/account',  icon: <IconBriefcase size={17} />, label: 'Comptes'          },
+      { to: '/auth',     icon: <IconLock size={17} />,      label: 'Authentification' },
+      { to: '/webhooks', icon: <IconKey size={17} />,       label: 'Webhooks & Keys'  },
     ],
   },
   {
