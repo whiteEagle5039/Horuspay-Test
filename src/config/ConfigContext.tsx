@@ -35,7 +35,7 @@ export const ConfigProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setConfig(newConfig);
     localStorage.setItem('horuspay_api_key', newConfig.apiKey);
     localStorage.setItem('horuspay_env', newConfig.environment);
-    localStorage.setItem('horuspay_account_id', newConfig.accountId);
+    localStorage.setItem('horuspay_account_id', String(newConfig.accountId));
     console.debug('[ConfigContext] setConfiguration -> saved to localStorage', newConfig);
   };
 
