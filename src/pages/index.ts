@@ -5,3 +5,4 @@ export { Customers }    from './Customers';
 export { Payouts }      from './Payouts';
 export { AuthPage }     from './AuthPage';
 export { WebhooksPage } from './WebhooksPage';
+export { AccountPage }  from './AccountPage';

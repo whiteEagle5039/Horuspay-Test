@@ -3,6 +3,7 @@ import { Layout } from './components/Layout';
 import { Dashboard, Setup, Transactions, Customers, Payouts } from './pages';
 import { AuthPage } from './pages/AuthPage';
 import { WebhooksPage } from './pages/WebhooksPage';
+import { AccountPage } from './pages/AccountPage';
 import { ConfigProvider, useConfig } from './config/ConfigContext';
 import './App.css';
 
@@ -23,6 +24,7 @@ function AppRoutes() {
           <Route path="/payouts"      element={<Protected el={<Payouts />} />} />
           <Route path="/auth"         element={<Protected el={<AuthPage />} />} />
           <Route path="/webhooks"     element={<Protected el={<WebhooksPage />} />} />
+          <Route path="/account"      element={<Protected el={<AccountPage />} />} />
           <Route path="*"             element={<Navigate to="/" />} />
         </Routes>
       </Layout>
