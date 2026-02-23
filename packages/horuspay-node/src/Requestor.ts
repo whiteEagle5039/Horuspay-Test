@@ -158,7 +158,9 @@ export class Requestor {
      * @param {string} path
      */
     protected url(path = '') {
-        return `${this.baseUrl()}/${HorusPay.getApiVersion()}${path}`;
+        const version = HorusPay.getApiVersion();
+        const versionPart = version ? `/${version}` : '';
+        return `${this.baseUrl()}${versionPart}${path}`;
     }
 
     /**

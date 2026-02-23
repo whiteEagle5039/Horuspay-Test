@@ -8,7 +8,7 @@ export class HorusPay {
     protected static token = '';
     protected static accountId: string|number = '';
     protected static environment = 'sandbox';
-    protected static apiVersion = 'v1';
+    protected static apiVersion = '';
     protected static verifySslCerts = true;
 
     /**
