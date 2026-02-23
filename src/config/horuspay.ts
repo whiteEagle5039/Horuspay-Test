@@ -7,13 +7,6 @@ const KEY_ENV    = 'horuspay_env';
 const KEY_ACC    = 'horuspay_account_id';
 const KEY_TOKEN  = 'horuspay_token';
 
-// ---- Proxy Vercel pour contourner CORS ----
-const PROXY_MAP: Record<string, string> = {
-  sandbox:     '/api/sandbox',
-  production:  '/api/prod',
-  development: '/api/dev',
-};
-
 // ---- Etat interne ----
 let _configured = false;
 
@@ -26,11 +19,6 @@ if (_stored.apiKey && _stored.accountId) {
 function _applyConfig(config: HorusPayConfig): void {
   HorusPay.setApiKey(config.apiKey);
   HorusPay.setEnvironment(config.environment);
-  // Proxy Vercel : redirige les appels via le même domaine pour éviter CORS
-  const proxyBase = PROXY_MAP[config.environment];
-  if (proxyBase) {
-    HorusPay.setApiBase(proxyBase);
-  }
   // accountId peut être string ou number
   const accId = typeof config.accountId === 'string'
     ? (isNaN(Number(config.accountId)) ? config.accountId : Number(config.accountId))

@@ -1,8 +1,5 @@
 {
   "rewrites": [
-    { "source": "/api/sandbox/:path*", "destination": "https://sandbox.horuspay.africa/:path*" },
-    { "source": "/api/prod/:path*",    "destination": "https://api.horuspay.africa/:path*" },
-    { "source": "/api/dev/:path*",     "destination": "https://dev-api.horuspay.africa/:path*" },
-    { "source": "/(.*)",               "destination": "/index.html" }
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
