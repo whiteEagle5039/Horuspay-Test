@@ -1,0 +1,53 @@
+{
+    "name": "horuspay",
+    "version": "1.0.1",
+    "description": "NodeJs library for HorusPay Api",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist",
+        "README.md"
+    ],
+    "scripts": {
+        "prepublishOnly": "npm run build",
+        "build": "tsc",
+        "watch": "tsc -w",
+        "spec": "mocha -r ts-node/register",
+        "test": "mocha -r ts-node/register test/*.ts"
+    },
+    "keywords": [
+        "horuspay",
+        "payment processing",
+        "mobile money",
+        "credit cards",
+        "api",
+        "payout"
+    ],
+    "author": "HorusPay",
+    "license": "ISC",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/HorusPay-Agregateur-de-Paiement-Moderne/horuspay-node.git"
+    },
+    "engines": {
+        "node": ">=14"
+    },
+    "devDependencies": {
+        "@types/chai": "^4.1.3",
+        "@types/chai-http": "^3.0.4",
+        "@types/mocha": "^5.2.7",
+        "@types/node": "^8.10.62",
+        "chai": "^4.1.2",
+        "chai-http": "^4.4.0",
+        "mocha": "^10.4.0",
+        "nock": "^9.2.6",
+        "ts-node": "^6.0.3",
+        "typescript": "^4.9.5"
+    },
+    "dependencies": {
+        "@types/pluralize": "0.0.28",
+        "axios": "^1.13.5",
+        "lodash.isplainobject": "^4.0.6",
+        "pluralize": "^7.0.0"
+    }
+}
