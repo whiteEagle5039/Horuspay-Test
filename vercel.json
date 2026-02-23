@@ -1,5 +1,8 @@
 {
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/api/sandbox/:path*", "destination": "https://sandbox.horuspay.com/:path*" },
+    { "source": "/api/prod/:path*",    "destination": "https://api.horuspay.com/:path*" },
+    { "source": "/api/dev/:path*",     "destination": "https://dev-api.horuspay.com/:path*" },
+    { "source": "/(.*)",               "destination": "/index.html" }
   ]
 }
