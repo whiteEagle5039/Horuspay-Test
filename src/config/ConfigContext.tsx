@@ -1,6 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { HorusPayConfig } from '../types';
-import { configureHorusPay, getHorusPayConfig } from './horuspay';
+import {
+  configureHorusPay,
+  getHorusPayConfig,
+  saveHorusPayConfig,
+  clearHorusPayConfig as clearStoredConfig,
+} from './horuspay';
 
 interface ConfigContextType {
   isConfigured: boolean;
@@ -17,42 +22,31 @@ export const ConfigProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Charger la configuration au montage
     const savedConfig = getHorusPayConfig();
-    console.debug('[ConfigContext] loaded config from localStorage:', savedConfig);
-    if (savedConfig.apiKey && savedConfig.accountId) {
+    if (savedConfig.secretKey || savedConfig.publicKey) {
       configureHorusPay(savedConfig);
       setIsConfigured(true);
       setConfig(savedConfig);
     }
     setLoading(false);
-    console.debug('[ConfigContext] isConfigured:', savedConfig.apiKey && savedConfig.accountId);
   }, []);
 
   const setConfiguration = (newConfig: HorusPayConfig) => {
-    configureHorusPay(newConfig);
+    saveHorusPayConfig(newConfig);
     setIsConfigured(true);
     setConfig(newConfig);
-    localStorage.setItem('horuspay_api_key', newConfig.apiKey);
-    localStorage.setItem('horuspay_env', newConfig.environment);
-    localStorage.setItem('horuspay_account_id', String(newConfig.accountId));
-    console.debug('[ConfigContext] setConfiguration -> saved to localStorage', newConfig);
   };
 
   const clearConfiguration = () => {
+    clearStoredConfig();
     setIsConfigured(false);
     setConfig(null);
-    localStorage.removeItem('horuspay_api_key');
-    localStorage.removeItem('horuspay_env');
-    localStorage.removeItem('horuspay_account_id');
   };
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <div style={{ textAlign: 'center' }}>
-          <h2>🎯 Chargement...</h2>
-        </div>
+      <div className="flex items-center justify-center h-screen bg-[#0f172a]">
+        <p className="text-slate-400 text-sm">Loading...</p>
       </div>
     );
   }

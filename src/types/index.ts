@@ -1,14 +1,40 @@
 // ============================================================
-// HorusPay SDK — Types complets alignés avec le SDK v1.0.0
+// HorusPay SDK — Types aligned with horuspay-node SDK
 // ============================================================
 
+// ---- Enums ----
+
+export const HorusPayEnvironment = {
+  Sandbox: 'sandbox',
+  Production: 'production',
+  Development: 'development',
+} as const;
+
+export type HorusPayEnvironment = (typeof HorusPayEnvironment)[keyof typeof HorusPayEnvironment];
+
+export const TransactionStatusEnum = {
+  Approved: 'approved',
+  Pending: 'pending',
+  Refused: 'refused',
+  Transferred: 'transferred',
+  Refunded: 'refunded',
+  PartiallyRefunded: 'partially_refunded',
+} as const;
+
+export type TransactionStatusEnum = (typeof TransactionStatusEnum)[keyof typeof TransactionStatusEnum];
+
+// ---- SDK Configuration ----
+
 export interface HorusPayConfig {
-  apiKey: string;
+  secretKey: string;       // horus_pay_sec_*
+  publicKey: string;       // horus_pay_pub_*
+  apiBase?: string;        // Custom API base URL
   environment: 'sandbox' | 'production' | 'development';
   accountId: string | number;
+  apiVersion?: string;     // e.g. 'v1'
 }
 
-// ---- Données de base ----
+// ---- Base Data Types ----
 
 export interface CustomerData {
   firstname: string;
@@ -17,7 +43,6 @@ export interface CustomerData {
   country_code: string;
   phone_prefix?: string;
   phone_number?: string;
-  // Format alternatif utilisé dans les payouts
   phone?: {
     number: string;
     country: string;
@@ -79,7 +104,7 @@ export interface AuthResetPasswordData {
   password_confirmation: string;
 }
 
-// ---- Modèles de réponse ----
+// ---- Response Models ----
 
 export interface Transaction {
   id: number;
@@ -191,14 +216,14 @@ export interface TransactionStatus_Detail {
   raw: unknown;
 }
 
-// ---- Réponse API générique ----
+// ---- Generic API Response ----
 
 export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;
   details?: Record<string, string[]> | unknown;
-  raw?: unknown; // Réponse brute SDK pour le debug
+  raw?: unknown;
 }
 
 // ---- Webhook Event ----
