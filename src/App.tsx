@@ -5,7 +5,7 @@ import { AuthPage } from './pages/AuthPage';
 import { WebhooksPage } from './pages/WebhooksPage';
 import { AccountPage } from './pages/AccountPage';
 import { ConfigProvider, useConfig } from './config/ConfigContext';
-import './App.css';
+
 
 function AppRoutes() {
   const { isConfigured } = useConfig();

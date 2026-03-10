@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Button, FormInput, Alert } from '../components';
 import { ResponseViewer } from '../components/ResponseViewer';
-import { IconRefresh } from '../components/Icons';
+import { RefreshCw } from 'lucide-react';
 import * as AccountService from '../services/accountService';
 import type { Account, AccountData } from '../types';
-import styles from './Transactions.module.css';
 
 type Tab = 'list' | 'retrieve' | 'create' | 'update' | 'invite';
 
@@ -142,32 +141,31 @@ export const AccountPage: React.FC = () => {
       label="ID du compte"
       type="number"
       value={accountId}
-      onChange={(e) => setAccountId(e.target.value)}
+      onChange={(e: any) => setAccountId(e.target.value)}
       placeholder="123"
       required
     />
   );
 
   return (
-    <div className={styles.container}>
-      <div className={styles.pageHeader}>
-        <div>
-          <h1 className={styles.pageTitle}>Comptes</h1>
-          <p className={styles.pageMeta}>
-            {accounts.length > 0
-              ? `${accounts.length} compte${accounts.length > 1 ? 's' : ''}`
-              : 'Gestion des comptes HorusPay'}
-          </p>
-        </div>
+    <div className="space-y-6">
+      <div className="mb-6">
+        <div className="text-xs font-semibold uppercase tracking-wider text-indigo-400 mb-1">Gestion</div>
+        <h1 className="text-2xl font-bold text-white">Comptes</h1>
+        <p className="text-sm text-slate-400 mt-1">
+          {accounts.length > 0
+            ? `${accounts.length} compte${accounts.length > 1 ? 's' : ''}`
+            : 'Gestion des comptes HorusPay'}
+        </p>
       </div>
 
       {msg && <Alert type={msg.type} message={msg.text} onClose={() => setMsg(null)} />}
 
-      <div className={styles.tabs}>
+      <div className="flex gap-1 bg-slate-800/50 p-1 rounded-lg border border-slate-700 mb-6 overflow-x-auto">
         {TABS.map(({ id, label }) => (
           <button
             key={id}
-            className={`${styles.tab} ${tab === id ? styles.active : ''}`}
+            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${tab === id ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'}`}
             onClick={() => { setTab(id); setMsg(null); setResponse(null); }}
           >
             {label}
@@ -177,61 +175,61 @@ export const AccountPage: React.FC = () => {
 
       {/* ======================== LIST ======================== */}
       {tab === 'list' && (
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <h3 className={styles.panelTitle}>Mes comptes — Account.all()</h3>
-            <Button onClick={loadAccounts} loading={loading} variant="secondary" size="small">
-              <IconRefresh size={14} /> Rafraîchir
+        <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-700 flex items-center justify-between">
+            <h3 className="text-base font-semibold text-white">Mes comptes — Account.all()</h3>
+            <Button onClick={loadAccounts} loading={loading} variant="secondary" size="sm">
+              <RefreshCw size={14} /> Rafraîchir
             </Button>
           </div>
-          <div className={styles.panelBody}>
+          <div className="p-6">
             {accounts.length === 0 ? (
-              <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '14px', padding: '32px 0' }}>
+              <p className="text-slate-500 text-sm py-8 text-center">
                 Aucun compte trouvé
               </p>
             ) : (
-              <div className={styles.tableWrap}>
-                <table className={styles.table}>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
                   <thead>
-                    <tr>
-                      <th>ID</th>
-                      <th>Nom</th>
-                      <th>Email</th>
-                      <th>Type</th>
-                      <th>Statut</th>
-                      <th>Pays</th>
-                      <th>Actions</th>
+                    <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500 border-b border-slate-700">
+                      <th className="px-4 py-3">ID</th>
+                      <th className="px-4 py-3">Nom</th>
+                      <th className="px-4 py-3">Email</th>
+                      <th className="px-4 py-3">Type</th>
+                      <th className="px-4 py-3">Statut</th>
+                      <th className="px-4 py-3">Pays</th>
+                      <th className="px-4 py-3">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {accounts.map((acc) => (
-                      <tr key={acc.id}>
-                        <td style={{ color: 'rgba(255,255,255,0.35)', fontSize: '12px' }}>#{acc.id}</td>
-                        <td style={{ color: 'rgba(255,255,255,0.78)', fontWeight: 500 }}>{acc.name}</td>
-                        <td className={styles.refCell}>{acc.email}</td>
-                        <td>
-                          <span className={`${styles.status} ${acc.account_type === 'business' ? styles.processing : styles.pending}`}>
+                      <tr key={acc.id} className="border-b border-slate-700/50 hover:bg-slate-700/30">
+                        <td className="px-4 py-3 text-slate-500 text-xs">#{acc.id}</td>
+                        <td className="px-4 py-3 text-slate-200 font-medium">{acc.name}</td>
+                        <td className="px-4 py-3 text-slate-300 font-mono text-xs">{acc.email}</td>
+                        <td className="px-4 py-3">
+                          <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${acc.account_type === 'business' ? 'bg-blue-500/10 text-blue-400' : 'bg-amber-500/10 text-amber-400'}`}>
                             {acc.account_type}
                           </span>
                         </td>
-                        <td>
-                          <span className={`${styles.status} ${acc.status === 'active' ? styles.approved : styles.rejected}`}>
+                        <td className="px-4 py-3">
+                          <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${acc.status === 'active' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}`}>
                             {acc.status}
                           </span>
                         </td>
-                        <td style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>{acc.country_code || '—'}</td>
-                        <td>
-                          <div style={{ display: 'flex', gap: '6px' }}>
+                        <td className="px-4 py-3 text-slate-500 text-xs">{acc.country_code || '—'}</td>
+                        <td className="px-4 py-3">
+                          <div className="flex gap-1.5">
                             <button
-                              className={styles.actionBtn}
+                              className="text-xs px-2.5 py-1 rounded-md bg-slate-700 text-slate-300 hover:bg-slate-600"
                               onClick={() => { setAccountId(String(acc.id)); handleRetrieve(String(acc.id)); setTab('retrieve'); }}
                             >Voir</button>
                             <button
-                              className={styles.actionBtnBlue}
+                              className="text-xs px-2.5 py-1 rounded-md bg-slate-700 text-slate-300 hover:bg-slate-600"
                               onClick={() => { setAccountId(String(acc.id)); setTab('update'); }}
                             >Modifier</button>
                             <button
-                              className={styles.actionBtnGreen}
+                              className="text-xs px-2.5 py-1 rounded-md bg-slate-700 text-slate-300 hover:bg-slate-600"
                               onClick={() => { setAccountId(String(acc.id)); setTab('invite'); }}
                             >Inviter</button>
                           </div>
@@ -249,10 +247,12 @@ export const AccountPage: React.FC = () => {
 
       {/* ======================== RETRIEVE ======================== */}
       {tab === 'retrieve' && (
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}><h3 className={styles.panelTitle}>Récupérer un compte — Account.retrieve()</h3></div>
-          <div className={styles.panelBody}>
-            <div className={styles.form}>
+        <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-700 flex items-center justify-between">
+            <h3 className="text-base font-semibold text-white">Récupérer un compte — Account.retrieve()</h3>
+          </div>
+          <div className="p-6">
+            <div className="space-y-4">
               <IdField />
               <Button fullWidth onClick={() => handleRetrieve()} loading={loading} variant="secondary">Récupérer</Button>
             </div>
@@ -263,40 +263,42 @@ export const AccountPage: React.FC = () => {
 
       {/* ======================== CREATE ======================== */}
       {tab === 'create' && (
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}><h3 className={styles.panelTitle}>Créer un compte — Account.create()</h3></div>
-          <div className={styles.panelBody}>
-            <form onSubmit={handleCreate} className={styles.form}>
-              <div className={styles.row}>
-                <FormInput label="Nom" type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Mon Entreprise" required />
-                <FormInput label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="contact@entreprise.com" required />
+        <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-700 flex items-center justify-between">
+            <h3 className="text-base font-semibold text-white">Créer un compte — Account.create()</h3>
+          </div>
+          <div className="p-6">
+            <form onSubmit={handleCreate} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormInput label="Nom" type="text" value={name} onChange={(e: any) => setName(e.target.value)} placeholder="Mon Entreprise" required />
+                <FormInput label="Email" type="email" value={email} onChange={(e: any) => setEmail(e.target.value)} placeholder="contact@entreprise.com" required />
               </div>
-              <div className={styles.row}>
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Type de compte</label>
-                  <select value={accountType} onChange={(e) => setAccountType(e.target.value)} className={styles.select}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-medium text-slate-400">Type de compte</label>
+                  <select value={accountType} onChange={(e: any) => setAccountType(e.target.value)} className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none">
                     {ACCOUNT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Type d'activité</label>
-                  <select value={businessType} onChange={(e) => setBusinessType(e.target.value)} className={styles.select}>
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-medium text-slate-400">Type d'activité</label>
+                  <select value={businessType} onChange={(e: any) => setBusinessType(e.target.value)} className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none">
                     {BUSINESS_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
               </div>
-              <div className={styles.row}>
-                <FormInput label="Nom commercial" type="text" value={businessName} onChange={(e) => setBusinessName(e.target.value)} placeholder="Mon Entreprise SA" />
-                <FormInput label="Site web" type="url" value={website} onChange={(e) => setWebsite(e.target.value)} placeholder="https://monsite.com" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormInput label="Nom commercial" type="text" value={businessName} onChange={(e: any) => setBusinessName(e.target.value)} placeholder="Mon Entreprise SA" />
+                <FormInput label="Site web" type="url" value={website} onChange={(e: any) => setWebsite(e.target.value)} placeholder="https://monsite.com" />
               </div>
-              <FormInput label="Description" type="text" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Brève description de l'activité" />
-              <div className={styles.row}>
-                <FormInput label="Préfixe tél." type="text" value={phonePrefix} onChange={(e) => setPhonePrefix(e.target.value)} placeholder="+229" />
-                <FormInput label="Numéro tél." type="text" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="67462549" />
+              <FormInput label="Description" type="text" value={description} onChange={(e: any) => setDescription(e.target.value)} placeholder="Brève description de l'activité" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormInput label="Préfixe tél." type="text" value={phonePrefix} onChange={(e: any) => setPhonePrefix(e.target.value)} placeholder="+229" />
+                <FormInput label="Numéro tél." type="text" value={phoneNumber} onChange={(e: any) => setPhoneNumber(e.target.value)} placeholder="67462549" />
               </div>
-              <div className={styles.row}>
-                <FormInput label="Code pays" type="text" value={countryCode} onChange={(e) => setCountryCode(e.target.value)} placeholder="BJ" />
-                <FormInput label="Fuseau horaire" type="text" value={timezone} onChange={(e) => setTimezone(e.target.value)} placeholder="Africa/Porto-Novo" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormInput label="Code pays" type="text" value={countryCode} onChange={(e: any) => setCountryCode(e.target.value)} placeholder="BJ" />
+                <FormInput label="Fuseau horaire" type="text" value={timezone} onChange={(e: any) => setTimezone(e.target.value)} placeholder="Africa/Porto-Novo" />
               </div>
               <Button type="submit" fullWidth loading={loading} variant="success">Créer le compte</Button>
             </form>
@@ -307,26 +309,28 @@ export const AccountPage: React.FC = () => {
 
       {/* ======================== UPDATE ======================== */}
       {tab === 'update' && (
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}><h3 className={styles.panelTitle}>Modifier un compte — Account.update()</h3></div>
-          <div className={styles.panelBody}>
-            <form onSubmit={handleUpdate} className={styles.form}>
+        <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-700 flex items-center justify-between">
+            <h3 className="text-base font-semibold text-white">Modifier un compte — Account.update()</h3>
+          </div>
+          <div className="p-6">
+            <form onSubmit={handleUpdate} className="space-y-4">
               <IdField />
-              <div className={styles.dividerLine} />
-              <div className={styles.row}>
-                <FormInput label="Nouveau nom" type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Nouveau nom" />
-                <FormInput label="Nouvel email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="newemail@example.com" />
+              <div className="border-t border-slate-700 my-4" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormInput label="Nouveau nom" type="text" value={name} onChange={(e: any) => setName(e.target.value)} placeholder="Nouveau nom" />
+                <FormInput label="Nouvel email" type="email" value={email} onChange={(e: any) => setEmail(e.target.value)} placeholder="newemail@example.com" />
               </div>
-              <div className={styles.row}>
-                <FormInput label="Nom commercial" type="text" value={businessName} onChange={(e) => setBusinessName(e.target.value)} placeholder="Nouveau nom commercial" />
-                <FormInput label="Site web" type="url" value={website} onChange={(e) => setWebsite(e.target.value)} placeholder="https://newsite.com" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormInput label="Nom commercial" type="text" value={businessName} onChange={(e: any) => setBusinessName(e.target.value)} placeholder="Nouveau nom commercial" />
+                <FormInput label="Site web" type="url" value={website} onChange={(e: any) => setWebsite(e.target.value)} placeholder="https://newsite.com" />
               </div>
-              <FormInput label="Description" type="text" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Nouvelle description" />
-              <div className={styles.row}>
-                <FormInput label="Numéro tél." type="text" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="67462549" />
-                <FormInput label="Fuseau horaire" type="text" value={timezone} onChange={(e) => setTimezone(e.target.value)} placeholder="Africa/Porto-Novo" />
+              <FormInput label="Description" type="text" value={description} onChange={(e: any) => setDescription(e.target.value)} placeholder="Nouvelle description" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormInput label="Numéro tél." type="text" value={phoneNumber} onChange={(e: any) => setPhoneNumber(e.target.value)} placeholder="67462549" />
+                <FormInput label="Fuseau horaire" type="text" value={timezone} onChange={(e: any) => setTimezone(e.target.value)} placeholder="Africa/Porto-Novo" />
               </div>
-              <div className={styles.infoBox}>
+              <div className="text-xs text-slate-500 bg-slate-900/50 rounded-lg p-3 border border-slate-700/50">
                 Seuls les champs remplis seront mis à jour.
               </div>
               <Button type="submit" fullWidth loading={loading}>Mettre à jour</Button>
@@ -338,21 +342,23 @@ export const AccountPage: React.FC = () => {
 
       {/* ======================== INVITE ======================== */}
       {tab === 'invite' && (
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}><h3 className={styles.panelTitle}>Inviter un utilisateur — account.invite()</h3></div>
-          <div className={styles.panelBody}>
-            <form onSubmit={handleInvite} className={styles.form}>
+        <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-700 flex items-center justify-between">
+            <h3 className="text-base font-semibold text-white">Inviter un utilisateur — account.invite()</h3>
+          </div>
+          <div className="p-6">
+            <form onSubmit={handleInvite} className="space-y-4">
               <IdField />
-              <div className={styles.dividerLine} />
+              <div className="border-t border-slate-700 my-4" />
               <FormInput
                 label="Email à inviter"
                 type="email"
                 value={inviteEmail}
-                onChange={(e) => setInviteEmail(e.target.value)}
+                onChange={(e: any) => setInviteEmail(e.target.value)}
                 placeholder="collaborateur@example.com"
                 required
               />
-              <div className={styles.infoBox}>
+              <div className="text-xs text-slate-500 bg-slate-900/50 rounded-lg p-3 border border-slate-700/50">
                 L'utilisateur recevra un email d'invitation pour rejoindre ce compte.
               </div>
               <Button type="submit" fullWidth loading={loading} variant="success">Envoyer l'invitation</Button>

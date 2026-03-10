@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Button, FormInput, Alert } from '../components';
 import { ResponseViewer } from '../components/ResponseViewer';
 import * as AuthService from '../services/authService';
-import styles from './Setup.module.css';
 
 type Tab = 'login' | 'register' | 'profile' | 'password' | 'reset';
 
@@ -147,20 +146,20 @@ export const AuthPage: React.FC = () => {
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.pageHeader}>
-        <div className={styles.pageEyebrow}>Authentication</div>
-        <h1 className={styles.pageTitle}>Auth SDK</h1>
-        <p className={styles.pageSubtitle}>Testez les méthodes d'authentification HorusPay</p>
+    <div className="space-y-6">
+      <div className="mb-6">
+        <div className="text-xs font-semibold uppercase tracking-wider text-indigo-400 mb-1">Authentication</div>
+        <h1 className="text-2xl font-bold text-white">Auth SDK</h1>
+        <p className="text-sm text-slate-400 mt-1">Testez les méthodes d'authentification HorusPay</p>
       </div>
 
       {msg && <Alert type={msg.type} message={msg.text} onClose={() => setMsg(null)} />}
 
-      <div className={styles.tabsWrap}>
+      <div className="flex gap-1 bg-slate-800/50 p-1 rounded-lg border border-slate-700 mb-6 overflow-x-auto">
         {TABS.map(({ id, label }) => (
           <button
             key={id}
-            className={`${styles.tabBtn} ${tab === id ? styles.tabActive : ''}`}
+            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${tab === id ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'}`}
             onClick={() => { setTab(id); setMsg(null); setResponse(null); }}
           >
             {label}
@@ -170,11 +169,11 @@ export const AuthPage: React.FC = () => {
 
       {/* ======================== LOGIN ======================== */}
       {tab === 'login' && (
-        <div className={styles.card}>
-          <h3 className={styles.cardTitle}>Connexion — Auth.login()</h3>
-          <form onSubmit={handleLogin} className={styles.form}>
-            <FormInput label="Email" type="email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} placeholder="user@example.com" required />
-            <FormInput label="Mot de passe" type="password" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} placeholder="••••••••" required />
+        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+          <h3 className="text-base font-semibold text-white mb-4">Connexion — Auth.login()</h3>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <FormInput label="Email" type="email" value={loginEmail} onChange={(e: any) => setLoginEmail(e.target.value)} placeholder="user@example.com" required />
+            <FormInput label="Mot de passe" type="password" value={loginPassword} onChange={(e: any) => setLoginPassword(e.target.value)} placeholder="••••••••" required />
             <Button type="submit" fullWidth loading={loading}>Se connecter</Button>
           </form>
           <ResponseViewer data={response} title="Réponse Auth.login()" />
@@ -183,13 +182,13 @@ export const AuthPage: React.FC = () => {
 
       {/* ======================== REGISTER ======================== */}
       {tab === 'register' && (
-        <div className={styles.card}>
-          <h3 className={styles.cardTitle}>Inscription — Auth.register()</h3>
-          <form onSubmit={handleRegister} className={styles.form}>
-            <FormInput label="Nom complet" type="text" value={regFullname} onChange={(e) => setRegFullname(e.target.value)} placeholder="Jean Dupont" required />
-            <FormInput label="Email" type="email" value={regEmail} onChange={(e) => setRegEmail(e.target.value)} placeholder="user@example.com" required />
-            <FormInput label="Mot de passe" type="password" value={regPassword} onChange={(e) => setRegPassword(e.target.value)} placeholder="••••••••" required />
-            <FormInput label="Confirmer le mot de passe" type="password" value={regConfirm} onChange={(e) => setRegConfirm(e.target.value)} placeholder="••••••••" required />
+        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+          <h3 className="text-base font-semibold text-white mb-4">Inscription — Auth.register()</h3>
+          <form onSubmit={handleRegister} className="space-y-4">
+            <FormInput label="Nom complet" type="text" value={regFullname} onChange={(e: any) => setRegFullname(e.target.value)} placeholder="Jean Dupont" required />
+            <FormInput label="Email" type="email" value={regEmail} onChange={(e: any) => setRegEmail(e.target.value)} placeholder="user@example.com" required />
+            <FormInput label="Mot de passe" type="password" value={regPassword} onChange={(e: any) => setRegPassword(e.target.value)} placeholder="••••••••" required />
+            <FormInput label="Confirmer le mot de passe" type="password" value={regConfirm} onChange={(e: any) => setRegConfirm(e.target.value)} placeholder="••••••••" required />
             <Button type="submit" fullWidth loading={loading} variant="success">S'inscrire</Button>
           </form>
           <ResponseViewer data={response} title="Réponse Auth.register()" />
@@ -198,18 +197,18 @@ export const AuthPage: React.FC = () => {
 
       {/* ======================== PROFILE ======================== */}
       {tab === 'profile' && (
-        <div className={styles.card}>
-          <h3 className={styles.cardTitle}>Profil — Auth.getProfile() / updateProfile()</h3>
-          <div className={styles.form}>
+        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+          <h3 className="text-base font-semibold text-white mb-4">Profil — Auth.getProfile() / updateProfile()</h3>
+          <div className="space-y-4">
             <Button fullWidth onClick={handleGetProfile} loading={loading} variant="secondary">Récupérer le profil</Button>
           </div>
-          <div className={styles.formDivider} />
-          <form onSubmit={handleUpdateProfile} className={styles.form}>
-            <FormInput label="Nouvel email" type="email" value={profEmail} onChange={(e) => setProfEmail(e.target.value)} placeholder="newemail@example.com" />
-            <FormInput label="Nouveau nom" type="text" value={profName} onChange={(e) => setProfName(e.target.value)} placeholder="Jean Dupont" />
-            <div className={styles.formGroup}>
-              <label className={styles.label}>Locale</label>
-              <select value={profLocale} onChange={(e) => setProfLocale(e.target.value)} className={styles.select}>
+          <div className="border-t border-slate-700 my-4" />
+          <form onSubmit={handleUpdateProfile} className="space-y-4">
+            <FormInput label="Nouvel email" type="email" value={profEmail} onChange={(e: any) => setProfEmail(e.target.value)} placeholder="newemail@example.com" />
+            <FormInput label="Nouveau nom" type="text" value={profName} onChange={(e: any) => setProfName(e.target.value)} placeholder="Jean Dupont" />
+            <div className="space-y-1.5">
+              <label className="block text-xs font-medium text-slate-400">Locale</label>
+              <select value={profLocale} onChange={(e: any) => setProfLocale(e.target.value)} className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none">
                 <option value="fr">Français</option>
                 <option value="en">English</option>
               </select>
@@ -222,12 +221,12 @@ export const AuthPage: React.FC = () => {
 
       {/* ======================== PASSWORD ======================== */}
       {tab === 'password' && (
-        <div className={styles.card}>
-          <h3 className={styles.cardTitle}>Changer le mot de passe — Auth.changePassword()</h3>
-          <form onSubmit={handleChangePassword} className={styles.form}>
-            <FormInput label="Mot de passe actuel" type="password" value={pwCurrent} onChange={(e) => setPwCurrent(e.target.value)} placeholder="••••••••" required />
-            <FormInput label="Nouveau mot de passe" type="password" value={pwNew} onChange={(e) => setPwNew(e.target.value)} placeholder="••••••••" required />
-            <FormInput label="Confirmer" type="password" value={pwConfirm} onChange={(e) => setPwConfirm(e.target.value)} placeholder="••••••••" required />
+        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+          <h3 className="text-base font-semibold text-white mb-4">Changer le mot de passe — Auth.changePassword()</h3>
+          <form onSubmit={handleChangePassword} className="space-y-4">
+            <FormInput label="Mot de passe actuel" type="password" value={pwCurrent} onChange={(e: any) => setPwCurrent(e.target.value)} placeholder="••••••••" required />
+            <FormInput label="Nouveau mot de passe" type="password" value={pwNew} onChange={(e: any) => setPwNew(e.target.value)} placeholder="••••••••" required />
+            <FormInput label="Confirmer" type="password" value={pwConfirm} onChange={(e: any) => setPwConfirm(e.target.value)} placeholder="••••••••" required />
             <Button type="submit" fullWidth loading={loading}>Changer le mot de passe</Button>
           </form>
           <ResponseViewer data={response} title="Réponse Auth.changePassword()" />
@@ -236,18 +235,18 @@ export const AuthPage: React.FC = () => {
 
       {/* ======================== RESET ======================== */}
       {tab === 'reset' && (
-        <div className={styles.card}>
-          <h3 className={styles.cardTitle}>Réinitialisation — Auth.requestPasswordReset()</h3>
-          <div className={styles.form}>
-            <FormInput label="Email" type="email" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} placeholder="user@example.com" />
+        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+          <h3 className="text-base font-semibold text-white mb-4">Réinitialisation — Auth.requestPasswordReset()</h3>
+          <div className="space-y-4">
+            <FormInput label="Email" type="email" value={resetEmail} onChange={(e: any) => setResetEmail(e.target.value)} placeholder="user@example.com" />
             <Button fullWidth onClick={handleRequestReset} loading={loading} variant="secondary">Envoyer l'email de reset</Button>
           </div>
-          <div className={styles.formDivider} />
-          <h3 className={styles.cardTitle}>Confirmer — Auth.resetPassword()</h3>
-          <form onSubmit={handleResetPassword} className={styles.form}>
-            <FormInput label="Token de reset" type="text" value={resetToken} onChange={(e) => setResetToken(e.target.value)} placeholder="abc123..." required />
-            <FormInput label="Nouveau mot de passe" type="password" value={resetPw} onChange={(e) => setResetPw(e.target.value)} placeholder="••••••••" required />
-            <FormInput label="Confirmer" type="password" value={resetPwConf} onChange={(e) => setResetPwConf(e.target.value)} placeholder="••••••••" required />
+          <div className="border-t border-slate-700 my-4" />
+          <h3 className="text-base font-semibold text-white mb-4">Confirmer — Auth.resetPassword()</h3>
+          <form onSubmit={handleResetPassword} className="space-y-4">
+            <FormInput label="Token de reset" type="text" value={resetToken} onChange={(e: any) => setResetToken(e.target.value)} placeholder="abc123..." required />
+            <FormInput label="Nouveau mot de passe" type="password" value={resetPw} onChange={(e: any) => setResetPw(e.target.value)} placeholder="••••••••" required />
+            <FormInput label="Confirmer" type="password" value={resetPwConf} onChange={(e: any) => setResetPwConf(e.target.value)} placeholder="••••••••" required />
             <Button type="submit" fullWidth loading={loading}>Réinitialiser</Button>
           </form>
           <ResponseViewer data={response} title="Réponse Auth.resetPassword()" />

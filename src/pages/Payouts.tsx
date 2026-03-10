@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Button, FormInput, Alert } from '../components';
 import { ResponseViewer } from '../components/ResponseViewer';
-import { IconSend, IconRefresh } from '../components/Icons';
+import { Send, RefreshCw } from 'lucide-react';
 import * as PayoutService from '../services/payoutService';
 import type { Payout, PayoutData } from '../types';
-import styles from './Payouts.module.css';
 
 type Tab = 'list' | 'create' | 'retrieve' | 'update' | 'pay' | 'delete' | 'batch';
 
@@ -186,7 +185,7 @@ export const Payouts: React.FC = () => {
     } else {
       notify('error', res.error || 'Erreur suppression');
     }
-    setResponse(res.data);
+    setResponse(res.raw ?? res.data);
     setLoading(false);
   };
 
@@ -210,10 +209,10 @@ export const Payouts: React.FC = () => {
     setLoading(false);
   };
 
-  const getStatusClass = (status: string) => {
-    if (status === 'completed' || status === 'approved') return styles.statusApproved;
-    if (status === 'failed' || status === 'refused') return styles.statusRefused;
-    return styles.statusPending;
+  const getStatusClasses = (status: string) => {
+    if (status === 'completed' || status === 'approved') return 'bg-emerald-500/10 text-emerald-400';
+    if (status === 'failed' || status === 'refused') return 'bg-red-500/10 text-red-400';
+    return 'bg-yellow-500/10 text-yellow-400';
   };
 
   const IdField = () => (
@@ -221,26 +220,30 @@ export const Payouts: React.FC = () => {
       label="ID du payout"
       type="number"
       value={payoutId}
-      onChange={(e) => setPayoutId(e.target.value)}
+      onChange={(e: any) => setPayoutId(e.target.value)}
       placeholder="123"
       required
     />
   );
 
   return (
-    <div className={styles.container}>
-      <div className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>Transferts</h1>
-        <p className={styles.pageMeta}>Payouts &amp; virements mobiles</p>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Transferts</h1>
+          <p className="text-sm text-slate-400 mt-1">Payouts &amp; virements mobiles</p>
+        </div>
       </div>
 
       {msg && <Alert type={msg.type} message={msg.text} onClose={() => setMsg(null)} />}
 
-      <div className={styles.tabs}>
+      <div className="flex gap-1 bg-slate-800/50 p-1 rounded-lg border border-slate-700 mb-6 overflow-x-auto">
         {TABS.map(({ id, label }) => (
           <button
             key={id}
-            className={`${styles.tab} ${tab === id ? styles.active : ''}`}
+            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${
+              tab === id ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'
+            }`}
             onClick={() => { setTab(id); setMsg(null); setResponse(null); }}
           >
             {label}
@@ -250,49 +253,49 @@ export const Payouts: React.FC = () => {
 
       {/* ======================== LIST ======================== */}
       {tab === 'list' && (
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <h3 className={styles.panelTitle}>Tous les transferts</h3>
-            <Button onClick={loadPayouts} loading={loading} variant="secondary" size="small">
-              <IconRefresh size={14} /> Rafraîchir
+        <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-700 flex items-center justify-between">
+            <h3 className="text-base font-semibold text-white">Tous les transferts</h3>
+            <Button onClick={loadPayouts} loading={loading} variant="secondary" size="sm">
+              <RefreshCw size={14} /> Rafraîchir
             </Button>
           </div>
-          <div className={styles.panelBody}>
+          <div className="p-6">
             {payouts.length === 0 ? (
-              <div className={styles.empty}>
-                <div className={styles.emptyIcon}><IconSend size={40} /></div>
-                <p className={styles.emptyText}>Aucun transfert trouvé</p>
+              <div className="text-slate-500 text-sm py-8 text-center">
+                <div className="mb-3 flex justify-center text-slate-600"><Send size={40} /></div>
+                <p>Aucun transfert trouvé</p>
               </div>
             ) : (
-              <div className={styles.tableWrap}>
-                <table className={styles.table}>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
                   <thead>
-                    <tr>
-                      <th>ID</th>
-                      <th>Référence</th>
-                      <th>Montant</th>
-                      <th>Mode</th>
-                      <th>Statut</th>
-                      <th>Actions rapides</th>
+                    <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500 border-b border-slate-700">
+                      <th className="px-4 py-3">ID</th>
+                      <th className="px-4 py-3">Référence</th>
+                      <th className="px-4 py-3">Montant</th>
+                      <th className="px-4 py-3">Mode</th>
+                      <th className="px-4 py-3">Statut</th>
+                      <th className="px-4 py-3">Actions rapides</th>
                     </tr>
                   </thead>
                   <tbody>
                     {payouts.map((p) => (
-                      <tr key={p.id}>
-                        <td style={{ color: 'rgba(255,255,255,0.35)', fontSize: '12px' }}>#{p.id}</td>
-                        <td className={styles.refCell}>{p.reference || '—'}</td>
-                        <td className={styles.amountCell}>
+                      <tr key={p.id} className="border-b border-slate-700/50 hover:bg-slate-700/30">
+                        <td className="px-4 py-3" style={{ color: 'rgba(255,255,255,0.35)', fontSize: '12px' }}>#{p.id}</td>
+                        <td className="px-4 py-3 text-slate-300 font-mono text-xs">{p.reference || '—'}</td>
+                        <td className="px-4 py-3 text-slate-300 font-semibold">
                           {p.amount.toLocaleString('fr-FR')} <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px' }}>{p.currency}</span>
                         </td>
-                        <td style={{ fontSize: '12px' }}>{p.mode}</td>
-                        <td>
-                          <span className={`${styles.status} ${getStatusClass(p.status)}`}>{p.status}</span>
+                        <td className="px-4 py-3 text-slate-300" style={{ fontSize: '12px' }}>{p.mode}</td>
+                        <td className="px-4 py-3">
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusClasses(p.status)}`}>{p.status}</span>
                         </td>
-                        <td>
-                          <div className={styles.actions}>
-                            <button className={styles.actionBtn} onClick={() => { setPayoutId(String(p.id)); handleRetrieve(String(p.id)); setTab('retrieve'); }}>Voir</button>
-                            <button className={styles.actionBtnGreen} onClick={() => { setPayoutId(String(p.id)); handlePay(String(p.id)); }}>Exécuter</button>
-                            <button className={styles.actionBtnRed} onClick={() => handleDelete(String(p.id))}>Supprimer</button>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            <button className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors" onClick={() => { setPayoutId(String(p.id)); handleRetrieve(String(p.id)); setTab('retrieve'); }}>Voir</button>
+                            <button className="text-xs text-emerald-400 hover:text-emerald-300 transition-colors" onClick={() => { setPayoutId(String(p.id)); handlePay(String(p.id)); }}>Exécuter</button>
+                            <button className="text-xs text-red-400 hover:text-red-300 transition-colors" onClick={() => handleDelete(String(p.id))}>Supprimer</button>
                           </div>
                         </td>
                       </tr>
@@ -308,47 +311,51 @@ export const Payouts: React.FC = () => {
 
       {/* ======================== CREATE ======================== */}
       {tab === 'create' && (
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}><h3 className={styles.panelTitle}>Créer un transfert</h3></div>
-          <div className={styles.panelBody}>
-            <form onSubmit={handleCreate} className={styles.form}>
-              <div className={styles.row}>
-                <FormInput label="Montant" type="number" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="5000" required />
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Devise</label>
-                  <select value={currency} onChange={(e) => setCurrency(e.target.value)} className={styles.select}>
+        <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-700 flex items-center justify-between"><h3 className="text-base font-semibold text-white">Créer un transfert</h3></div>
+          <div className="p-6">
+            <form onSubmit={handleCreate} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormInput label="Montant" type="number" value={amount} onChange={(e: any) => setAmount(e.target.value)} placeholder="5000" required />
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-slate-300">Devise</label>
+                  <select value={currency} onChange={(e: any) => setCurrency(e.target.value)} className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none">
                     <option value="XOF">XOF — Franc CFA</option>
                     <option value="USD">USD — Dollar</option>
                     <option value="EUR">EUR — Euro</option>
                   </select>
                 </div>
               </div>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Mode de paiement</label>
-                <select value={mode} onChange={(e) => setMode(e.target.value)} className={styles.select}>
+              <div className="space-y-1.5">
+                <label className="block text-sm font-medium text-slate-300">Mode de paiement</label>
+                <select value={mode} onChange={(e: any) => setMode(e.target.value)} className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none">
                   {PAYMENT_MODES.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
                 </select>
               </div>
-              <FormInput label="URL de callback" type="url" value={callbackUrl} onChange={(e) => setCallbackUrl(e.target.value)} placeholder="https://example.com/callback" required />
+              <FormInput label="URL de callback" type="url" value={callbackUrl} onChange={(e: any) => setCallbackUrl(e.target.value)} placeholder="https://example.com/callback" required />
 
-              <div className={styles.divider}><span>Client</span></div>
+              <div className="relative flex items-center gap-3 py-2">
+                <div className="flex-1 border-t border-slate-700" />
+                <span className="text-xs text-slate-500 uppercase tracking-wider">Client</span>
+                <div className="flex-1 border-t border-slate-700" />
+              </div>
 
-              <FormInput label="ID client existant (optionnel)" type="number" value={customerId} onChange={(e) => setCustomerId(e.target.value)} placeholder="Laisser vide pour nouveau client" />
+              <FormInput label="ID client existant (optionnel)" type="number" value={customerId} onChange={(e: any) => setCustomerId(e.target.value)} placeholder="Laisser vide pour nouveau client" />
 
               {!customerId && (
-                <div className={styles.newClientSection}>
-                  <div className={styles.row}>
-                    <FormInput label="Prénom" type="text" value={firstname} onChange={(e) => setFirstname(e.target.value)} placeholder="Jean" required />
-                    <FormInput label="Nom" type="text" value={lastname} onChange={(e) => setLastname(e.target.value)} placeholder="Dupont" required />
+                <div className="space-y-4 rounded-lg border border-slate-700/50 p-4 bg-slate-800/50">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormInput label="Prénom" type="text" value={firstname} onChange={(e: any) => setFirstname(e.target.value)} placeholder="Jean" required />
+                    <FormInput label="Nom" type="text" value={lastname} onChange={(e: any) => setLastname(e.target.value)} placeholder="Dupont" required />
                   </div>
-                  <FormInput label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="jean@example.com" required />
-                  <div className={styles.formGroup}>
-                    <label className={styles.label}>Code Pays</label>
-                    <select value={countryCode} onChange={(e) => setCountryCode(e.target.value)} className={styles.select}>
+                  <FormInput label="Email" type="email" value={email} onChange={(e: any) => setEmail(e.target.value)} placeholder="jean@example.com" required />
+                  <div className="space-y-1.5">
+                    <label className="block text-sm font-medium text-slate-300">Code Pays</label>
+                    <select value={countryCode} onChange={(e: any) => setCountryCode(e.target.value)} className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none">
                       {COUNTRIES.map(c => <option key={c.code} value={c.code}>{c.label} ({c.code})</option>)}
                     </select>
                   </div>
-                  <FormInput label="Numéro de téléphone" type="text" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="+22967462549" required />
+                  <FormInput label="Numéro de téléphone" type="text" value={phoneNumber} onChange={(e: any) => setPhoneNumber(e.target.value)} placeholder="+22967462549" required />
                 </div>
               )}
 
@@ -361,10 +368,10 @@ export const Payouts: React.FC = () => {
 
       {/* ======================== RETRIEVE ======================== */}
       {tab === 'retrieve' && (
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}><h3 className={styles.panelTitle}>Récupérer un payout</h3></div>
-          <div className={styles.panelBody}>
-            <div className={styles.form}>
+        <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-700 flex items-center justify-between"><h3 className="text-base font-semibold text-white">Récupérer un payout</h3></div>
+          <div className="p-6">
+            <div className="space-y-4">
               <IdField />
               <Button fullWidth onClick={() => handleRetrieve()} loading={loading} variant="secondary">Récupérer</Button>
             </div>
@@ -375,13 +382,13 @@ export const Payouts: React.FC = () => {
 
       {/* ======================== PAY ======================== */}
       {tab === 'pay' && (
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}><h3 className={styles.panelTitle}>Exécuter un transfert</h3></div>
-          <div className={styles.panelBody}>
-            <div className={styles.form}>
+        <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-700 flex items-center justify-between"><h3 className="text-base font-semibold text-white">Exécuter un transfert</h3></div>
+          <div className="p-6">
+            <div className="space-y-4">
               <IdField />
-              <div className={styles.infoBox}>
-                Appelle <code>payout.pay()</code> — déclenche le transfert mobile.
+              <div className="text-xs rounded-lg p-3 border border-indigo-500/30 bg-indigo-500/10 text-indigo-300">
+                Appelle <code className="bg-slate-900 px-1.5 py-0.5 rounded text-indigo-400">payout.pay()</code> — déclenche le transfert mobile.
               </div>
               <Button fullWidth onClick={() => handlePay()} loading={loading} variant="success">Exécuter le transfert</Button>
             </div>
@@ -392,17 +399,17 @@ export const Payouts: React.FC = () => {
 
       {/* ======================== UPDATE ======================== */}
       {tab === 'update' && (
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}><h3 className={styles.panelTitle}>Modifier un payout</h3></div>
-          <div className={styles.panelBody}>
-            <form onSubmit={handleUpdate} className={styles.form}>
+        <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-700 flex items-center justify-between"><h3 className="text-base font-semibold text-white">Modifier un payout</h3></div>
+          <div className="p-6">
+            <form onSubmit={handleUpdate} className="space-y-4">
               <IdField />
-              <div className={styles.dividerLine} />
-              <div className={styles.row}>
-                <FormInput label="Nouveau montant" type="number" value={updAmount} onChange={(e) => setUpdAmount(e.target.value)} placeholder="5000" />
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Devise</label>
-                  <select value={updCurrency} onChange={(e) => setUpdCurrency(e.target.value)} className={styles.select}>
+              <div className="border-t border-slate-700" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormInput label="Nouveau montant" type="number" value={updAmount} onChange={(e: any) => setUpdAmount(e.target.value)} placeholder="5000" />
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-slate-300">Devise</label>
+                  <select value={updCurrency} onChange={(e: any) => setUpdCurrency(e.target.value)} className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none">
                     <option value="XOF">XOF</option>
                     <option value="USD">USD</option>
                     <option value="EUR">EUR</option>
@@ -418,13 +425,13 @@ export const Payouts: React.FC = () => {
 
       {/* ======================== DELETE ======================== */}
       {tab === 'delete' && (
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}><h3 className={styles.panelTitle}>Supprimer un payout</h3></div>
-          <div className={styles.panelBody}>
-            <div className={styles.form}>
+        <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-700 flex items-center justify-between"><h3 className="text-base font-semibold text-white">Supprimer un payout</h3></div>
+          <div className="p-6">
+            <div className="space-y-4">
               <IdField />
-              <div className={styles.warningBox}>
-                ⚠️ Suppression permanente. Appelle <code>payout.delete()</code>.
+              <div className="text-xs rounded-lg p-3 border border-yellow-500/30 bg-yellow-500/10 text-yellow-300">
+                Warning: Suppression permanente. Appelle <code className="bg-slate-900 px-1.5 py-0.5 rounded text-yellow-400">payout.delete()</code>.
               </div>
               <Button fullWidth onClick={() => handleDelete()} loading={loading} variant="danger">Supprimer définitivement</Button>
             </div>
@@ -435,22 +442,22 @@ export const Payouts: React.FC = () => {
 
       {/* ======================== BATCH ======================== */}
       {tab === 'batch' && (
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}><h3 className={styles.panelTitle}>Batch de transferts</h3></div>
-          <div className={styles.panelBody}>
-            <form onSubmit={handleBatch} className={styles.form}>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Tableau JSON des transferts</label>
+        <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-700 flex items-center justify-between"><h3 className="text-base font-semibold text-white">Batch de transferts</h3></div>
+          <div className="p-6">
+            <form onSubmit={handleBatch} className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="block text-sm font-medium text-slate-300">Tableau JSON des transferts</label>
                 <textarea
                   value={batchJson}
-                  onChange={(e) => setBatchJson(e.target.value)}
-                  className={styles.textarea}
+                  onChange={(e: any) => setBatchJson(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm font-mono focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none resize-y"
                   rows={14}
                   spellCheck={false}
                 />
               </div>
-              <div className={styles.infoBox}>
-                Chaque entrée doit contenir : <code>amount, currency, mode, callback_url</code> et soit <code>customer_id</code> soit un objet <code>customer</code>.
+              <div className="text-xs rounded-lg p-3 border border-indigo-500/30 bg-indigo-500/10 text-indigo-300">
+                Chaque entrée doit contenir : <code className="bg-slate-900 px-1.5 py-0.5 rounded text-indigo-400">amount, currency, mode, callback_url</code> et soit <code className="bg-slate-900 px-1.5 py-0.5 rounded text-indigo-400">customer_id</code> soit un objet <code className="bg-slate-900 px-1.5 py-0.5 rounded text-indigo-400">customer</code>.
               </div>
               <Button type="submit" fullWidth loading={loading} variant="success">Envoyer le batch</Button>
             </form>

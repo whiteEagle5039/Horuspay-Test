@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Button, FormInput, Alert } from '../components';
 import { ResponseViewer } from '../components/ResponseViewer';
-import { IconRefresh, IconCreditCard } from '../components/Icons';
+import { RefreshCw, CreditCard } from 'lucide-react';
 import * as TransactionService from '../services/transactionService';
 import type { Transaction, TransactionData } from '../types';
-import styles from './Transactions.module.css';
 
 type Tab = 'list' | 'create' | 'retrieve' | 'pay' | 'generate-token' | 'status' | 'refund' | 'update' | 'delete';
 
@@ -137,7 +136,7 @@ export const Transactions: React.FC = () => {
     } else {
       notify('error', res.error || 'Erreur statut');
     }
-    setResponse(res.data);
+    setResponse(res.raw ?? res.data);
     setLoading(false);
   };
 
@@ -186,7 +185,7 @@ export const Transactions: React.FC = () => {
     } else {
       notify('error', res.error || 'Erreur suppression');
     }
-    setResponse(res.data);
+    setResponse(res.raw ?? res.data);
     setLoading(false);
   };
 
@@ -194,10 +193,10 @@ export const Transactions: React.FC = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'approved':   case 'transferred': return styles.statusApproved;
-      case 'refunded':   case 'partially_refunded': return styles.statusRefunded;
-      case 'refused':    return styles.statusRefused;
-      default:           return styles.statusPending;
+      case 'approved':   case 'transferred': return 'bg-emerald-500/10 text-emerald-400';
+      case 'refunded':   case 'partially_refunded': return 'bg-emerald-500/10 text-emerald-400';
+      case 'refused':    return 'bg-red-500/10 text-red-400';
+      default:           return 'bg-yellow-500/10 text-yellow-400';
     }
   };
 
@@ -207,20 +206,20 @@ export const Transactions: React.FC = () => {
       label="ID de la transaction"
       type="number"
       value={txId}
-      onChange={(e) => setTxId(e.target.value)}
+      onChange={(e: any) => setTxId(e.target.value)}
       placeholder="123"
       required
     />
   );
 
   return (
-    <div className={styles.container}>
+    <div className="space-y-6">
 
       {/* Header */}
-      <div className={styles.pageHeader}>
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className={styles.pageTitle}>Transactions</h1>
-          <p className={styles.pageMeta}>
+          <h1 className="text-2xl font-bold text-white">Transactions</h1>
+          <p className="text-sm text-slate-400">
             {transactions.length > 0
               ? `${transactions.length} transaction${transactions.length > 1 ? 's' : ''}`
               : 'Gérez vos transactions de paiement'}
@@ -233,11 +232,11 @@ export const Transactions: React.FC = () => {
       )}
 
       {/* Tabs */}
-      <div className={styles.tabs}>
+      <div className="flex gap-1 bg-slate-800/50 p-1 rounded-lg border border-slate-700 mb-6 overflow-x-auto">
         {TABS.map(({ id, label }) => (
           <button
             key={id}
-            className={`${styles.tab} ${tab === id ? styles.active : ''}`}
+            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${tab === id ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'}`}
             onClick={() => { setTab(id); setMsg(null); setResponse(null); }}
           >
             {label}
@@ -247,54 +246,54 @@ export const Transactions: React.FC = () => {
 
       {/* ======================== LIST ======================== */}
       {tab === 'list' && (
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <h3 className={styles.panelTitle}>Toutes les transactions</h3>
-            <Button onClick={loadTransactions} loading={loading} variant="secondary" size="small">
-              <IconRefresh size={14} /> Rafraîchir
+        <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-700 flex items-center justify-between">
+            <h3 className="text-base font-semibold text-white">Toutes les transactions</h3>
+            <Button onClick={loadTransactions} loading={loading} variant="secondary" size="sm">
+              <RefreshCw size={14} /> Rafraîchir
             </Button>
           </div>
-          <div className={styles.panelBody}>
+          <div className="p-6">
             {transactions.length === 0 ? (
-              <div className={styles.empty}>
-                <div className={styles.emptyIcon}><IconCreditCard size={40} /></div>
-                <p className={styles.emptyText}>Aucune transaction trouvée</p>
+              <div className="text-slate-500 text-sm py-8 text-center">
+                <div className="mb-3 flex justify-center text-slate-600"><CreditCard size={40} /></div>
+                <p>Aucune transaction trouvée</p>
               </div>
             ) : (
-              <div className={styles.tableWrap}>
-                <table className={styles.table}>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
                   <thead>
-                    <tr>
-                      <th>ID</th>
-                      <th>Référence</th>
-                      <th>Montant</th>
-                      <th>Statut</th>
-                      <th>Créée le</th>
-                      <th>Actions rapides</th>
+                    <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500 border-b border-slate-700">
+                      <th className="px-4 py-3">ID</th>
+                      <th className="px-4 py-3">Référence</th>
+                      <th className="px-4 py-3">Montant</th>
+                      <th className="px-4 py-3">Statut</th>
+                      <th className="px-4 py-3">Créée le</th>
+                      <th className="px-4 py-3">Actions rapides</th>
                     </tr>
                   </thead>
                   <tbody>
                     {transactions.map((tx) => (
-                      <tr key={tx.id}>
-                        <td style={{ color: 'rgba(255,255,255,0.35)', fontSize: '12px' }}>#{tx.id}</td>
-                        <td className={styles.refCell}>{tx.reference || '—'}</td>
-                        <td className={styles.amountCell}>
-                          {tx.amount.toLocaleString('fr-FR')} <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px' }}>{tx.currency}</span>
+                      <tr key={tx.id} className="border-b border-slate-700/50 hover:bg-slate-700/30">
+                        <td className="px-4 py-3 text-xs text-white/35">#{tx.id}</td>
+                        <td className="px-4 py-3 font-mono text-xs text-indigo-400">{tx.reference || '—'}</td>
+                        <td className="px-4 py-3 text-slate-300">
+                          {tx.amount.toLocaleString('fr-FR')} <span className="text-white/40 text-[11px]">{tx.currency}</span>
                         </td>
-                        <td>
-                          <span className={`${styles.status} ${getStatusColor(tx.status)}`}>
+                        <td className="px-4 py-3">
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(tx.status)}`}>
                             {tx.status}
                           </span>
                         </td>
-                        <td style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)' }}>
+                        <td className="px-4 py-3 text-xs text-white/45">
                           {tx.created_at ? new Date(tx.created_at).toLocaleDateString('fr-FR') : '—'}
                         </td>
-                        <td>
-                          <div className={styles.actions}>
-                            <button className={styles.actionBtn} onClick={() => { setTxId(String(tx.id)); setTab('retrieve'); handleRetrieve(String(tx.id)); }}>Voir</button>
-                            <button className={styles.actionBtnGreen} onClick={() => { setTxId(String(tx.id)); setTab('pay'); }}>Payer</button>
-                            <button className={styles.actionBtnBlue} onClick={() => { setTxId(String(tx.id)); setTab('status'); }}>Statut</button>
-                            <button className={styles.actionBtnRed} onClick={() => { setTxId(String(tx.id)); handleRefund(); }}>Rembourser</button>
+                        <td className="px-4 py-3">
+                          <div className="flex gap-1">
+                            <button className="text-xs px-2.5 py-1 rounded-md bg-slate-700 text-slate-300 hover:bg-slate-600" onClick={() => { setTxId(String(tx.id)); setTab('retrieve'); handleRetrieve(String(tx.id)); }}>Voir</button>
+                            <button className="text-xs px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20" onClick={() => { setTxId(String(tx.id)); setTab('pay'); }}>Payer</button>
+                            <button className="text-xs px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20" onClick={() => { setTxId(String(tx.id)); setTab('status'); }}>Statut</button>
+                            <button className="text-xs px-2.5 py-1 rounded-md bg-red-500/10 text-red-400 hover:bg-red-500/20" onClick={() => { setTxId(String(tx.id)); handleRefund(); }}>Rembourser</button>
                           </div>
                         </td>
                       </tr>
@@ -310,26 +309,26 @@ export const Transactions: React.FC = () => {
 
       {/* ======================== CREATE ======================== */}
       {tab === 'create' && (
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <h3 className={styles.panelTitle}>Créer une transaction</h3>
+        <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-700 flex items-center justify-between">
+            <h3 className="text-base font-semibold text-white">Créer une transaction</h3>
           </div>
-          <div className={styles.panelBody}>
-            <form onSubmit={handleCreate} className={styles.form}>
-              <div className={styles.row}>
-                <FormInput label="Montant" type="number" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="5000" required />
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Devise</label>
-                  <select value={currency} onChange={(e) => setCurrency(e.target.value)} className={styles.select}>
+          <div className="p-6">
+            <form onSubmit={handleCreate} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <FormInput label="Montant" type="number" value={amount} onChange={(e: any) => setAmount(e.target.value)} placeholder="5000" required />
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-medium text-slate-300">Devise</label>
+                  <select value={currency} onChange={(e: any) => setCurrency(e.target.value)} className="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     <option value="XOF">XOF — Franc CFA</option>
                     <option value="USD">USD — Dollar</option>
                     <option value="EUR">EUR — Euro</option>
                   </select>
                 </div>
               </div>
-              <FormInput label="URL de callback" type="url" value={callbackUrl} onChange={(e) => setCallbackUrl(e.target.value)} placeholder="https://example.com/callback" required />
-              <FormInput label="Description (optionnel)" type="text" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Paiement commande #42" />
-              <FormInput label="ID Client (optionnel)" type="number" value={customerId} onChange={(e) => setCustomerId(e.target.value)} placeholder="Laisser vide pour nouveau client" />
+              <FormInput label="URL de callback" type="url" value={callbackUrl} onChange={(e: any) => setCallbackUrl(e.target.value)} placeholder="https://example.com/callback" required />
+              <FormInput label="Description (optionnel)" type="text" value={description} onChange={(e: any) => setDescription(e.target.value)} placeholder="Paiement commande #42" />
+              <FormInput label="ID Client (optionnel)" type="number" value={customerId} onChange={(e: any) => setCustomerId(e.target.value)} placeholder="Laisser vide pour nouveau client" />
               <Button type="submit" fullWidth loading={loading} variant="success">Créer la transaction</Button>
             </form>
             <ResponseViewer data={response} title="Réponse Transaction.create()" />
@@ -339,10 +338,10 @@ export const Transactions: React.FC = () => {
 
       {/* ======================== RETRIEVE ======================== */}
       {tab === 'retrieve' && (
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}><h3 className={styles.panelTitle}>Récupérer une transaction</h3></div>
-          <div className={styles.panelBody}>
-            <div className={styles.form}>
+        <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-700 flex items-center justify-between"><h3 className="text-base font-semibold text-white">Récupérer une transaction</h3></div>
+          <div className="p-6">
+            <div className="space-y-4">
               <IdField />
               <Button fullWidth onClick={() => handleRetrieve()} loading={loading} variant="secondary">Récupérer</Button>
             </div>
@@ -353,12 +352,12 @@ export const Transactions: React.FC = () => {
 
       {/* ======================== PAY ======================== */}
       {tab === 'pay' && (
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}><h3 className={styles.panelTitle}>Déclencher un paiement</h3></div>
-          <div className={styles.panelBody}>
-            <div className={styles.form}>
+        <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-700 flex items-center justify-between"><h3 className="text-base font-semibold text-white">Déclencher un paiement</h3></div>
+          <div className="p-6">
+            <div className="space-y-4">
               <IdField />
-              <div className={styles.infoBox}>
+              <div className="text-xs text-slate-500 bg-slate-900/50 rounded-lg p-3 border border-slate-700/50">
                 Appelle <code>transaction.pay()</code> — déclenche le flux de paiement sans redirection.
               </div>
               <Button fullWidth onClick={handlePay} loading={loading} variant="success">Déclencher le paiement</Button>
@@ -370,12 +369,12 @@ export const Transactions: React.FC = () => {
 
       {/* ======================== GENERATE TOKEN ======================== */}
       {tab === 'generate-token' && (
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}><h3 className={styles.panelTitle}>Générer un token de paiement</h3></div>
-          <div className={styles.panelBody}>
-            <div className={styles.form}>
+        <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-700 flex items-center justify-between"><h3 className="text-base font-semibold text-white">Générer un token de paiement</h3></div>
+          <div className="p-6">
+            <div className="space-y-4">
               <IdField />
-              <div className={styles.infoBox}>
+              <div className="text-xs text-slate-500 bg-slate-900/50 rounded-lg p-3 border border-slate-700/50">
                 Appelle <code>transaction.generateToken()</code> — génère un token JWT pour le checkout.
               </div>
               <Button fullWidth onClick={handleGenerateToken} loading={loading}>Générer le token</Button>
@@ -387,12 +386,12 @@ export const Transactions: React.FC = () => {
 
       {/* ======================== STATUS ======================== */}
       {tab === 'status' && (
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}><h3 className={styles.panelTitle}>Vérifier le statut</h3></div>
-          <div className={styles.panelBody}>
-            <div className={styles.form}>
+        <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-700 flex items-center justify-between"><h3 className="text-base font-semibold text-white">Vérifier le statut</h3></div>
+          <div className="p-6">
+            <div className="space-y-4">
               <IdField />
-              <div className={styles.infoBox}>
+              <div className="text-xs text-slate-500 bg-slate-900/50 rounded-lg p-3 border border-slate-700/50">
                 Combine <code>transaction.getStatus()</code>, <code>wasPaid()</code>, <code>wasRefunded()</code> et <code>wasPartiallyRefunded()</code>.
               </div>
               <Button fullWidth onClick={handleStatus} loading={loading} variant="secondary">Vérifier le statut</Button>
@@ -404,12 +403,12 @@ export const Transactions: React.FC = () => {
 
       {/* ======================== REFUND ======================== */}
       {tab === 'refund' && (
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}><h3 className={styles.panelTitle}>Rembourser une transaction</h3></div>
-          <div className={styles.panelBody}>
-            <div className={styles.form}>
+        <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-700 flex items-center justify-between"><h3 className="text-base font-semibold text-white">Rembourser une transaction</h3></div>
+          <div className="p-6">
+            <div className="space-y-4">
               <IdField />
-              <div className={styles.warningBox}>
+              <div className="text-xs text-amber-400 bg-amber-500/10 rounded-lg p-3 border border-amber-500/20">
                 ⚠️ Cette action est irréversible. Appelle <code>transaction.refund()</code>.
               </div>
               <Button fullWidth onClick={handleRefund} loading={loading} variant="danger">Rembourser</Button>
@@ -421,17 +420,17 @@ export const Transactions: React.FC = () => {
 
       {/* ======================== UPDATE ======================== */}
       {tab === 'update' && (
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}><h3 className={styles.panelTitle}>Modifier une transaction</h3></div>
-          <div className={styles.panelBody}>
-            <form onSubmit={handleUpdate} className={styles.form}>
+        <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-700 flex items-center justify-between"><h3 className="text-base font-semibold text-white">Modifier une transaction</h3></div>
+          <div className="p-6">
+            <form onSubmit={handleUpdate} className="space-y-4">
               <IdField />
-              <div className={styles.dividerLine} />
-              <div className={styles.row}>
-                <FormInput label="Nouveau montant" type="number" value={updAmount} onChange={(e) => setUpdAmount(e.target.value)} placeholder="5000" />
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>Devise</label>
-                  <select value={updCurrency} onChange={(e) => setUpdCurrency(e.target.value)} className={styles.select}>
+              <div className="border-t border-slate-700 my-4" />
+              <div className="grid grid-cols-2 gap-4">
+                <FormInput label="Nouveau montant" type="number" value={updAmount} onChange={(e: any) => setUpdAmount(e.target.value)} placeholder="5000" />
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-medium text-slate-300">Devise</label>
+                  <select value={updCurrency} onChange={(e: any) => setUpdCurrency(e.target.value)} className="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     <option value="XOF">XOF</option>
                     <option value="USD">USD</option>
                     <option value="EUR">EUR</option>
@@ -447,12 +446,12 @@ export const Transactions: React.FC = () => {
 
       {/* ======================== DELETE ======================== */}
       {tab === 'delete' && (
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}><h3 className={styles.panelTitle}>Supprimer une transaction</h3></div>
-          <div className={styles.panelBody}>
-            <div className={styles.form}>
+        <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-700 flex items-center justify-between"><h3 className="text-base font-semibold text-white">Supprimer une transaction</h3></div>
+          <div className="p-6">
+            <div className="space-y-4">
               <IdField />
-              <div className={styles.warningBox}>
+              <div className="text-xs text-amber-400 bg-amber-500/10 rounded-lg p-3 border border-amber-500/20">
                 ⚠️ Suppression permanente. Appelle <code>transaction.delete()</code>.
               </div>
               <Button fullWidth onClick={handleDelete} loading={loading} variant="danger">Supprimer définitivement</Button>

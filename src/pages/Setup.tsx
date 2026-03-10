@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button, FormInput, Alert } from '../components';
 import { getHorusPayConfig } from '../config/horuspay';
 import { useConfig } from '../config/ConfigContext';
-import styles from './Setup.module.css';
+import type { HorusPayConfig } from '../types';
 
 type Env = 'sandbox' | 'production' | 'development';
 
@@ -16,18 +16,24 @@ const ENV_OPTIONS: { value: Env; label: string; hint: string }[] = [
 export const Setup: React.FC = () => {
   const navigate = useNavigate();
   const { isConfigured: configured, setConfiguration } = useConfig();
-  const [apiKey, setApiKey]           = useState('');
-  const [environment, setEnvironment] = useState<Env>('sandbox');
-  const [accountId, setAccountId]     = useState('');
-  const [message, setMessage]         = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-  const [loading, setLoading]         = useState(false);
+  const [secretKey, setSecretKey]       = useState('');
+  const [publicKey, setPublicKey]       = useState('');
+  const [apiBase, setApiBase]           = useState('');
+  const [environment, setEnvironment]   = useState<Env>('sandbox');
+  const [accountId, setAccountId]       = useState('');
+  const [apiVersion, setApiVersion]     = useState('');
+  const [message, setMessage]           = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [loading, setLoading]           = useState(false);
 
   useEffect(() => {
     const config = getHorusPayConfig();
-    if (config.apiKey) {
-      setApiKey(config.apiKey);
+    if (config.secretKey) {
+      setSecretKey(config.secretKey);
+      setPublicKey(config.publicKey);
+      setApiBase(config.apiBase ?? '');
       setEnvironment(config.environment);
       setAccountId(String(config.accountId));
+      setApiVersion(config.apiVersion ?? '');
     }
   }, []);
 
@@ -35,14 +41,22 @@ export const Setup: React.FC = () => {
     e.preventDefault();
     setLoading(true);
 
-    if (!apiKey.trim() || !accountId.trim()) {
-      setMessage({ type: 'error', text: 'Tous les champs sont requis' });
+    if (!secretKey.trim() || !publicKey.trim() || !accountId.trim()) {
+      setMessage({ type: 'error', text: 'Les champs obligatoires sont requis' });
       setLoading(false);
       return;
     }
 
     try {
-      setConfiguration({ apiKey: apiKey.trim(), environment, accountId: accountId.trim() });
+      const config: HorusPayConfig = {
+        secretKey: secretKey.trim(),
+        publicKey: publicKey.trim(),
+        environment,
+        accountId: accountId.trim(),
+        ...(apiBase.trim() && { apiBase: apiBase.trim() }),
+        ...(apiVersion.trim() && { apiVersion: apiVersion.trim() }),
+      };
+      setConfiguration(config);
       setMessage({ type: 'success', text: 'Configuration sauvegardée avec succès !' });
       setTimeout(() => navigate('/'), 1500);
     } catch (error: any) {
@@ -53,80 +67,113 @@ export const Setup: React.FC = () => {
   };
 
   return (
-    <div className={styles.container}>
+    <div className="space-y-6">
 
       {/* Header */}
-      <div className={styles.pageHeader}>
-        <div className={styles.pageEyebrow}>Configuration</div>
-        <h1 className={styles.pageTitle}>Paramètres HorusPay</h1>
-        <p className={styles.pageSubtitle}>Renseignez vos clés pour commencer à tester le SDK</p>
+      <div>
+        <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Configuration</div>
+        <h1 className="text-3xl font-bold text-white">Paramètres HorusPay</h1>
+        <p className="text-slate-400 mt-2">Renseignez vos clés pour commencer à tester le SDK</p>
       </div>
 
       {/* Configured badge */}
       {configured && (
-        <div className={styles.statusBadge}>
-          <span className={styles.statusDot} />
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-emerald-500/30 text-xs font-semibold text-emerald-400 bg-emerald-500/10">
+          <span className="w-2 h-2 rounded-full bg-emerald-400" />
           SDK configuré et actif
         </div>
       )}
 
       {/* Main card */}
-      <div className={styles.card}>
-        <h3 className={styles.cardTitle}>Clés & Environnement</h3>
+      <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+        <h3 className="text-white font-semibold mb-4">Clés & Environnement</h3>
 
-        <form onSubmit={handleSave} className={styles.form}>
+        <form onSubmit={handleSave} className="space-y-4">
           {message && (
             <Alert type={message.type} message={message.text} onClose={() => setMessage(null)} />
           )}
 
           <FormInput
-            label="Clé API (API Key)"
+            label="Clé Secrète (Secret Key)"
             type="password"
-            value={apiKey}
-            onChange={(e) => setApiKey(e.target.value)}
-            placeholder="sk_live_xxxxxxxx"
+            value={secretKey}
+            onChange={(e: any) => setSecretKey(e.target.value)}
+            placeholder="horus_pay_sec_..."
             required
           />
 
+          <FormInput
+            label="Clé Publique (Public Key)"
+            type="password"
+            value={publicKey}
+            onChange={(e: any) => setPublicKey(e.target.value)}
+            placeholder="horus_pay_pub_..."
+            required
+          />
+
+          <FormInput
+            label="URL de Base API (optionnel)"
+            type="text"
+            value={apiBase}
+            onChange={(e: any) => setApiBase(e.target.value)}
+            placeholder="https://api.horuspay.africa"
+          />
+
           {/* Environment pill selector */}
-          <div className={styles.formGroup}>
-            <label className={styles.label}>Environnement</label>
-            <div className={styles.envSelector}>
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Environnement</label>
+            <div className="flex gap-2">
               {ENV_OPTIONS.map(({ value, label, hint }) => {
                 const isActive = environment === value;
-                const variantClass =
-                  value === 'sandbox'     ? styles.envOptionSandbox :
-                  value === 'production'  ? styles.envOptionProduction :
-                  styles.envOptionDevelopment;
+                const activeColors =
+                  value === 'sandbox'    ? 'border-blue-500/50 bg-blue-500/10 text-blue-400' :
+                  value === 'production' ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-400' :
+                                           'border-amber-500/50 bg-amber-500/10 text-amber-400';
+                const dotColor =
+                  value === 'sandbox'    ? 'bg-blue-400' :
+                  value === 'production' ? 'bg-emerald-400' :
+                                           'bg-amber-400';
 
                 return (
                   <button
                     key={value}
                     type="button"
                     onClick={() => setEnvironment(value)}
-                    className={`${styles.envOption} ${variantClass} ${isActive ? styles.envActive : ''}`}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-medium transition-colors ${
+                      isActive
+                        ? activeColors
+                        : 'border-slate-600 bg-slate-700/50 text-slate-400 hover:border-slate-500'
+                    }`}
                   >
-                    <span className={styles.envDot} />
+                    <span className={`w-2 h-2 rounded-full ${isActive ? dotColor : 'bg-slate-500'}`} />
                     {label}
-                    <span style={{ fontSize: '10px', opacity: 0.6 }}>{hint}</span>
+                    <span className="text-[10px] opacity-60">{hint}</span>
                   </button>
                 );
               })}
             </div>
           </div>
 
-          <div className={styles.formDivider} />
+          <div className="border-t border-slate-700 my-4" />
 
           <FormInput
             label="ID du Compte"
             type="text"
             value={accountId}
-            onChange={(e) => setAccountId(e.target.value)}
+            onChange={(e: any) => setAccountId(e.target.value)}
             placeholder="votre-account-id"
             required
           />
 
-          <div className={styles.actions}>
+          <FormInput
+            label="Version API (optionnel)"
+            type="text"
+            value={apiVersion}
+            onChange={(e: any) => setApiVersion(e.target.value)}
+            placeholder="v1"
+          />
+
+          <div className="flex flex-col gap-3 pt-2">
             <Button type="submit" fullWidth loading={loading}>
               Sauvegarder la Configuration
             </Button>
@@ -140,15 +187,15 @@ export const Setup: React.FC = () => {
       </div>
 
       {/* Info box */}
-      <div className={styles.info}>
-        <h4>Notes d'utilisation</h4>
-        <ul>
-          <li>La clé API est stockée localement dans votre navigateur</li>
-          <li>Utilisez toujours une clé de test en environnement Sandbox</li>
-          <li>Ne partagez jamais votre clé API de Production</li>
+      <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-5">
+        <h4 className="text-white font-semibold mb-3">Notes d'utilisation</h4>
+        <ul className="space-y-2 text-sm text-slate-400 list-disc list-inside">
+          <li>Les clés sont stockées localement dans votre navigateur</li>
+          <li>Utilisez toujours des clés de test en environnement Sandbox</li>
+          <li>Ne partagez jamais vos clés de Production</li>
           <li>
             Consultez la{' '}
-            <a href="https://docs.horuspay.com" target="_blank" rel="noopener noreferrer">
+            <a href="https://docs.horuspay.com" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline">
               documentation API
             </a>{' '}
             pour plus de détails

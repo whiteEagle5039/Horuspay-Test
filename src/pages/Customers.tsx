@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Button, FormInput, Alert } from '../components';
 import { ResponseViewer } from '../components/ResponseViewer';
-import { IconUsers, IconRefresh } from '../components/Icons';
+import { Users, RefreshCw } from 'lucide-react';
 import * as CustomerService from '../services/customerService';
 import type { Customer, CustomerData } from '../types';
-import styles from './Customers.module.css';
 
 type Tab = 'list' | 'create' | 'retrieve' | 'update' | 'delete';
 
@@ -135,7 +134,7 @@ export const Customers: React.FC = () => {
     } else {
       notify('error', res.error || 'Erreur suppression');
     }
-    setResponse(res.data);
+    setResponse(res.raw ?? res.data);
     setLoading(false);
   };
 
@@ -150,18 +149,18 @@ export const Customers: React.FC = () => {
       label="ID du client"
       type="number"
       value={customerId}
-      onChange={(e) => setCustomerId(e.target.value)}
+      onChange={(e: any) => setCustomerId(e.target.value)}
       placeholder="123"
       required
     />
   );
 
   return (
-    <div className={styles.container}>
-      <div className={styles.pageHeader}>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className={styles.pageTitle}>Clients</h1>
-          <p className={styles.pageMeta}>
+          <h1 className="text-2xl font-bold text-white">Clients</h1>
+          <p className="text-sm text-slate-400 mt-1">
             {customers.length > 0
               ? `${customers.length} client${customers.length > 1 ? 's' : ''}`
               : 'Gérez vos clients'}
@@ -171,11 +170,11 @@ export const Customers: React.FC = () => {
 
       {msg && <Alert type={msg.type} message={msg.text} onClose={() => setMsg(null)} />}
 
-      <div className={styles.tabs}>
+      <div className="flex gap-1 bg-slate-800/50 p-1 rounded-lg border border-slate-700 mb-6 overflow-x-auto">
         {TABS.map(({ id, label }) => (
           <button
             key={id}
-            className={`${styles.tab} ${tab === id ? styles.active : ''}`}
+            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${tab === id ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'}`}
             onClick={() => { setTab(id); setMsg(null); setResponse(null); }}
           >
             {label}
@@ -184,52 +183,52 @@ export const Customers: React.FC = () => {
       </div>
 
       {tab === 'list' && (
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <h3 className={styles.panelTitle}>Tous les clients</h3>
-            <Button onClick={loadCustomers} loading={loading} variant="secondary" size="small">
-              <IconRefresh size={14} /> Rafraîchir
+        <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-700 flex items-center justify-between">
+            <h3 className="text-base font-semibold text-white">Tous les clients</h3>
+            <Button onClick={loadCustomers} loading={loading} variant="secondary" size="sm">
+              <RefreshCw size={14} /> Rafraîchir
             </Button>
           </div>
-          <div className={styles.panelBody}>
+          <div className="p-6">
             {customers.length === 0 ? (
-              <div className={styles.empty}>
-                <div className={styles.emptyIcon}><IconUsers size={40} /></div>
-                <p className={styles.emptyText}>Aucun client trouvé</p>
+              <div className="text-center py-8">
+                <div className="text-slate-500 mb-2 flex justify-center"><Users size={40} /></div>
+                <p className="text-slate-500 text-sm">Aucun client trouvé</p>
               </div>
             ) : (
-              <div className={styles.grid}>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {customers.map((c) => (
-                  <div key={c.id} className={styles.customerCard}>
-                    <div className={styles.customerCardHead}>
-                      <div className={styles.customerAvatar}>
+                  <div key={c.id} className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+                    <div className="px-4 py-3 flex items-center gap-3 border-b border-slate-700/50">
+                      <div className="w-8 h-8 rounded-full bg-indigo-600/20 text-indigo-400 flex items-center justify-center text-xs font-bold">
                         {getInitials(c.firstname, c.lastname)}
                       </div>
                       <div>
-                        <p className={styles.customerName}>{c.firstname} {c.lastname}</p>
-                        <p className={styles.customerId}>#{c.id}</p>
+                        <p className="text-sm font-medium text-white">{c.firstname} {c.lastname}</p>
+                        <p className="text-xs text-slate-500">#{c.id}</p>
                       </div>
                     </div>
-                    <div className={styles.customerCardBody}>
-                      <div className={styles.customerDetail}>
-                        <span className={styles.detailKey}>Email</span>
-                        <span className={styles.detailVal}>{c.email}</span>
+                    <div className="px-4 py-3 space-y-2">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-slate-500">Email</span>
+                        <span className="text-slate-300 truncate ml-2">{c.email}</span>
                       </div>
-                      <div className={styles.customerDetail}>
-                        <span className={styles.detailKey}>Pays</span>
-                        <span className={styles.detailVal}>{c.country_code}</span>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-slate-500">Pays</span>
+                        <span className="text-slate-300">{c.country_code}</span>
                       </div>
-                      <div className={styles.customerDetail}>
-                        <span className={styles.detailKey}>Créé</span>
-                        <span className={styles.detailVal}>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-slate-500">Créé</span>
+                        <span className="text-slate-300">
                           {c.created_at ? new Date(c.created_at).toLocaleDateString('fr-FR') : '—'}
                         </span>
                       </div>
                     </div>
-                    <div className={styles.customerCardFoot}>
-                      <button className={styles.actionBtn} onClick={() => { setCustomerId(String(c.id)); handleRetrieve(String(c.id)); setTab('retrieve'); }}>Voir</button>
-                      <button className={styles.actionBtn} onClick={() => { setCustomerId(String(c.id)); setTab('update'); }}>Modifier</button>
-                      <button className={styles.actionBtnRed} onClick={() => handleDelete(String(c.id))}>Supprimer</button>
+                    <div className="px-4 py-3 border-t border-slate-700/50 flex items-center gap-2">
+                      <button className="text-xs px-2.5 py-1 rounded-md bg-slate-700 text-slate-300 hover:bg-slate-600" onClick={() => { setCustomerId(String(c.id)); handleRetrieve(String(c.id)); setTab('retrieve'); }}>Voir</button>
+                      <button className="text-xs px-2.5 py-1 rounded-md bg-slate-700 text-slate-300 hover:bg-slate-600" onClick={() => { setCustomerId(String(c.id)); setTab('update'); }}>Modifier</button>
+                      <button className="text-xs px-2.5 py-1 rounded-md bg-red-900/30 text-red-400 hover:bg-red-900/50" onClick={() => handleDelete(String(c.id))}>Supprimer</button>
                     </div>
                   </div>
                 ))}
@@ -241,26 +240,26 @@ export const Customers: React.FC = () => {
       )}
 
       {tab === 'create' && (
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}><h3 className={styles.panelTitle}>Créer un client</h3></div>
-          <div className={styles.panelBody}>
-            <form onSubmit={handleCreate} className={styles.form}>
-              <div className={styles.row}>
-                <FormInput label="Prénom" type="text" value={firstname} onChange={(e) => setFirstname(e.target.value)} placeholder="Jean" required />
-                <FormInput label="Nom" type="text" value={lastname} onChange={(e) => setLastname(e.target.value)} placeholder="Dupont" required />
+        <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-700 flex items-center justify-between"><h3 className="text-base font-semibold text-white">Créer un client</h3></div>
+          <div className="p-6">
+            <form onSubmit={handleCreate} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormInput label="Prénom" type="text" value={firstname} onChange={(e: any) => setFirstname(e.target.value)} placeholder="Jean" required />
+                <FormInput label="Nom" type="text" value={lastname} onChange={(e: any) => setLastname(e.target.value)} placeholder="Dupont" required />
               </div>
-              <FormInput label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="jean@example.com" required />
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Code Pays</label>
-                <select value={countryCode} onChange={(e) => handleCountryChange(e.target.value)} className={styles.select}>
+              <FormInput label="Email" type="email" value={email} onChange={(e: any) => setEmail(e.target.value)} placeholder="jean@example.com" required />
+              <div className="space-y-1.5">
+                <label className="block text-sm font-medium text-slate-300">Code Pays</label>
+                <select value={countryCode} onChange={(e: any) => handleCountryChange(e.target.value)} className="w-full rounded-lg border border-slate-600 bg-slate-700 text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                   {COUNTRIES.map(c => (
                     <option key={c.code} value={c.code}>{c.label} ({c.code})</option>
                   ))}
                 </select>
               </div>
-              <div className={styles.row}>
-                <FormInput label="Préfixe" type="text" value={phonePrefix} onChange={(e) => setPhonePrefix(e.target.value)} placeholder="+229" />
-                <FormInput label="Numéro" type="text" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="67462549" required />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormInput label="Préfixe" type="text" value={phonePrefix} onChange={(e: any) => setPhonePrefix(e.target.value)} placeholder="+229" />
+                <FormInput label="Numéro" type="text" value={phoneNumber} onChange={(e: any) => setPhoneNumber(e.target.value)} placeholder="67462549" required />
               </div>
               <Button type="submit" fullWidth loading={loading} variant="success">Créer le client</Button>
             </form>
@@ -270,10 +269,10 @@ export const Customers: React.FC = () => {
       )}
 
       {tab === 'retrieve' && (
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}><h3 className={styles.panelTitle}>Récupérer un client</h3></div>
-          <div className={styles.panelBody}>
-            <div className={styles.form}>
+        <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-700 flex items-center justify-between"><h3 className="text-base font-semibold text-white">Récupérer un client</h3></div>
+          <div className="p-6">
+            <div className="space-y-4">
               <IdField />
               <Button fullWidth onClick={() => handleRetrieve()} loading={loading} variant="secondary">Récupérer</Button>
             </div>
@@ -283,17 +282,17 @@ export const Customers: React.FC = () => {
       )}
 
       {tab === 'update' && (
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}><h3 className={styles.panelTitle}>Modifier un client</h3></div>
-          <div className={styles.panelBody}>
-            <form onSubmit={handleUpdate} className={styles.form}>
+        <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-700 flex items-center justify-between"><h3 className="text-base font-semibold text-white">Modifier un client</h3></div>
+          <div className="p-6">
+            <form onSubmit={handleUpdate} className="space-y-4">
               <IdField />
-              <div className={styles.dividerLine} />
-              <div className={styles.row}>
-                <FormInput label="Nouveau prénom" type="text" value={updFirstname} onChange={(e) => setUpdFirstname(e.target.value)} placeholder="Jean" />
-                <FormInput label="Nouveau nom" type="text" value={updLastname} onChange={(e) => setUpdLastname(e.target.value)} placeholder="Dupont" />
+              <div className="border-t border-slate-700" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormInput label="Nouveau prénom" type="text" value={updFirstname} onChange={(e: any) => setUpdFirstname(e.target.value)} placeholder="Jean" />
+                <FormInput label="Nouveau nom" type="text" value={updLastname} onChange={(e: any) => setUpdLastname(e.target.value)} placeholder="Dupont" />
               </div>
-              <FormInput label="Nouvel email" type="email" value={updEmail} onChange={(e) => setUpdEmail(e.target.value)} placeholder="newemail@example.com" />
+              <FormInput label="Nouvel email" type="email" value={updEmail} onChange={(e: any) => setUpdEmail(e.target.value)} placeholder="newemail@example.com" />
               <Button type="submit" fullWidth loading={loading}>Mettre à jour</Button>
             </form>
             <ResponseViewer data={response} title="Réponse Customer.update()" />
@@ -302,13 +301,13 @@ export const Customers: React.FC = () => {
       )}
 
       {tab === 'delete' && (
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}><h3 className={styles.panelTitle}>Supprimer un client</h3></div>
-          <div className={styles.panelBody}>
-            <div className={styles.form}>
+        <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-700 flex items-center justify-between"><h3 className="text-base font-semibold text-white">Supprimer un client</h3></div>
+          <div className="p-6">
+            <div className="space-y-4">
               <IdField />
-              <div className={styles.warningBox}>
-                ⚠️ Suppression permanente. Appelle <code>customer.delete()</code>.
+              <div className="bg-yellow-900/20 border border-yellow-700/30 rounded-lg px-4 py-3 text-sm text-yellow-400">
+                ⚠️ Suppression permanente. Appelle <code className="bg-slate-700 px-1 py-0.5 rounded text-xs">customer.delete()</code>.
               </div>
               <Button fullWidth onClick={() => handleDelete()} loading={loading} variant="danger">Supprimer définitivement</Button>
             </div>
