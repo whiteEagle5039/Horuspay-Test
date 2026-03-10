@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { ChevronDown } from 'lucide-react';
 
 interface ResponseViewerProps {
   data: unknown;
@@ -7,7 +8,7 @@ interface ResponseViewerProps {
 
 export const ResponseViewer: React.FC<ResponseViewerProps> = ({
   data,
-  title = 'Réponse SDK',
+  title = 'SDK Response',
 }) => {
   const [collapsed, setCollapsed] = useState(false);
 
@@ -16,67 +17,36 @@ export const ResponseViewer: React.FC<ResponseViewerProps> = ({
   const json = JSON.stringify(data, null, 2);
 
   return (
-    <div style={{
-      marginTop: '16px',
-      border: '1px solid rgba(96,165,250,0.2)',
-      borderRadius: '12px',
-      overflow: 'hidden',
-      background: 'rgba(15,23,42,0.6)',
-      backdropFilter: 'blur(8px)',
-    }}>
+    <div className="mt-4 border border-blue-500/20 rounded-lg overflow-hidden bg-slate-900/60 backdrop-blur-sm">
       {/* Header */}
       <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '10px 16px',
-          background: 'rgba(59,130,246,0.08)',
-          borderBottom: collapsed ? 'none' : '1px solid rgba(96,165,250,0.15)',
-          cursor: 'pointer',
-          userSelect: 'none',
-        }}
-        onClick={() => setCollapsed(c => !c)}
+        className="flex items-center justify-between px-4 py-2.5 bg-blue-500/[0.08] cursor-pointer select-none border-b border-blue-500/15"
+        onClick={() => setCollapsed((c) => !c)}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: '10px', color: '#60A5FA', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-bold tracking-wider uppercase text-blue-400">
             {title}
           </span>
-          <span style={{
-            fontSize: '10px',
-            background: 'rgba(16,185,129,0.15)',
-            color: '#6EE7B7',
-            border: '1px solid rgba(16,185,129,0.25)',
-            borderRadius: '999px',
-            padding: '1px 8px',
-            fontWeight: 600,
-          }}>
+          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/25">
             JSON
           </span>
         </div>
-        <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)', transform: collapsed ? 'rotate(-90deg)' : 'none', transition: '150ms' }}>
-          ▼
-        </span>
+        <ChevronDown
+          size={14}
+          className={`text-white/35 transition-transform duration-150 ${
+            collapsed ? '-rotate-90' : ''
+          }`}
+        />
       </div>
 
       {/* Content */}
       {!collapsed && (
-        <pre style={{
-          margin: 0,
-          padding: '14px 16px',
-          fontSize: '12px',
-          lineHeight: '1.6',
-          color: 'rgba(255,255,255,0.75)',
-          fontFamily: "'Fira Code', 'Cascadia Code', monospace",
-          overflowX: 'auto',
-          maxHeight: '320px',
-          overflowY: 'auto',
-          whiteSpace: 'pre-wrap',
-          wordBreak: 'break-all',
-        }}>
-          <code dangerouslySetInnerHTML={{
-            __html: syntaxHighlight(json)
-          }} />
+        <pre className="m-0 px-4 py-3.5 text-xs leading-relaxed text-white/75 font-mono overflow-auto max-h-96 whitespace-pre-wrap break-all">
+          <code
+            dangerouslySetInnerHTML={{
+              __html: syntaxHighlight(json),
+            }}
+          />
         </pre>
       )}
     </div>

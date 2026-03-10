@@ -1,117 +1,131 @@
 import { Link, useLocation } from 'react-router-dom';
-import { IconHome, IconCreditCard, IconUsers, IconSend, IconSettings, IconHexagon, IconExternalLink } from './Icons';
+import {
+  LayoutDashboard,
+  CreditCard,
+  Users,
+  Send,
+  KeyRound,
+  Webhook,
+  Building2,
+  Settings,
+  ExternalLink,
+  Hexagon,
+} from 'lucide-react';
 import { isHorusPayConfigured, getHorusPayConfig } from '../config/horuspay';
-import styles from './Layout.module.css';
-
-// Icônes supplémentaires
-const IconKey = ({ size = 17 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2l-9.6 9.6"/><path d="M15.5 7.5l3 3L22 7l-3-3"/>
-  </svg>
-);
-const IconLock = ({ size = 17 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-  </svg>
-);
-const IconBriefcase = ({ size = 17 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="12"/>
-  </svg>
-);
-
-const ENV_COLORS: Record<string, string> = {
-  sandbox:     '#60A5FA',
-  production:  '#6EE7B7',
-  development: '#FCD34D',
-};
 
 const NAV_SECTIONS = [
   {
     label: 'Principal',
     items: [
-      { to: '/',             icon: <IconHome size={17} />,       label: 'Dashboard'      },
-      { to: '/transactions', icon: <IconCreditCard size={17} />, label: 'Transactions'   },
-      { to: '/customers',    icon: <IconUsers size={17} />,      label: 'Clients'        },
-      { to: '/payouts',      icon: <IconSend size={17} />,       label: 'Transferts'     },
+      { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
+      { to: '/transactions', icon: CreditCard, label: 'Transactions' },
+      { to: '/customers', icon: Users, label: 'Customers' },
+      { to: '/payouts', icon: Send, label: 'Payouts' },
     ],
   },
   {
-    label: 'Avancé',
+    label: 'Gestion',
     items: [
-      { to: '/account',  icon: <IconBriefcase size={17} />, label: 'Comptes'          },
-      { to: '/auth',     icon: <IconLock size={17} />,      label: 'Authentification' },
-      { to: '/webhooks', icon: <IconKey size={17} />,       label: 'Webhooks & Keys'  },
+      { to: '/auth', icon: KeyRound, label: 'Auth' },
+      { to: '/webhooks', icon: Webhook, label: 'Webhooks' },
+      { to: '/account', icon: Building2, label: 'Accounts' },
     ],
   },
   {
-    label: 'Paramètres',
+    label: 'Settings',
     items: [
-      { to: '/setup', icon: <IconSettings size={17} />, label: 'Configuration' },
+      { to: '/setup', icon: Settings, label: 'Configuration' },
     ],
   },
 ];
+
+const envBadgeClasses: Record<string, string> = {
+  sandbox: 'border-yellow-500/30 text-yellow-400 bg-yellow-500/10',
+  production: 'border-emerald-500/30 text-emerald-400 bg-emerald-500/10',
+  development: 'border-blue-500/30 text-blue-400 bg-blue-500/10',
+};
+
+const envDotClasses: Record<string, string> = {
+  sandbox: 'bg-yellow-400',
+  production: 'bg-emerald-400',
+  development: 'bg-blue-400',
+};
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
   const configured = isHorusPayConfigured();
   const config = getHorusPayConfig();
-  const envColor = ENV_COLORS[config.environment] || '#60A5FA';
+  const env = config.environment;
 
   return (
-    <div className={styles.layout}>
-      <nav className={styles.sidebar}>
-
-        {/* Brand */}
-        <div className={styles.logo}>
-          <div className={styles.logoMark}>
-            <div className={styles.logoBadge}><IconHexagon size={18} /></div>
-            <h2>HorusPay</h2>
+    <div className="flex h-screen bg-[#0f172a]">
+      {/* Sidebar */}
+      <nav className="fixed left-0 top-0 bottom-0 w-64 bg-slate-900 border-r border-slate-800 flex flex-col">
+        {/* Logo */}
+        <div className="px-5 py-6 border-b border-slate-800">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center">
+              <Hexagon size={16} className="text-white" />
+            </div>
+            <h2 className="text-lg font-bold text-white tracking-tight">HorusPay</h2>
           </div>
-          <p>SDK Testeur</p>
+          <p className="text-xs text-slate-500 mt-1 ml-[42px]">SDK Tester</p>
         </div>
 
-        {/* Env indicator */}
+        {/* Env badge */}
         {configured && (
-          <div className={styles.envBadge} style={{ borderColor: `${envColor}33`, color: envColor }}>
-            <span className={styles.envDot} style={{ background: envColor }} />
-            {config.environment}
+          <div className={`mx-4 mt-4 flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-semibold capitalize ${envBadgeClasses[env] || envBadgeClasses.development}`}>
+            <span className={`w-1.5 h-1.5 rounded-full ${envDotClasses[env] || envDotClasses.development}`} />
+            {env}
           </div>
         )}
 
         {/* Navigation */}
-        {NAV_SECTIONS.map((section) => (
-          <div key={section.label} className={styles.menu}>
-            <span className={styles.sectionLabel}>{section.label}</span>
-            {section.items.map(({ to, icon, label }) => (
-              <Link
-                key={to}
-                to={to}
-                className={`${styles.menuItem} ${location.pathname === to ? styles.active : ''}`}
-              >
-                <span className={styles.menuIcon}>{icon}</span>
-                {label}
-              </Link>
-            ))}
-          </div>
-        ))}
+        <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
+          {NAV_SECTIONS.map((section) => (
+            <div key={section.label}>
+              <span className="px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                {section.label}
+              </span>
+              <div className="mt-2 space-y-0.5">
+                {section.items.map(({ to, icon: Icon, label }) => {
+                  const isActive = location.pathname === to;
+                  return (
+                    <Link
+                      key={to}
+                      to={to}
+                      className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        isActive
+                          ? 'bg-indigo-600/15 text-indigo-400'
+                          : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                      }`}
+                    >
+                      <Icon size={17} className={isActive ? 'text-indigo-400' : ''} />
+                      {label}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
 
         {/* Footer */}
-        <div className={styles.footer}>
-          <span className={styles.footerVersion}>HorusPay SDK v1.0.0</span>
+        <div className="px-5 py-4 border-t border-slate-800 space-y-1.5">
+          <span className="block text-[10px] text-slate-600">HorusPay SDK v1.0.0</span>
           <a
             href="https://docs.horuspay.com"
             target="_blank"
             rel="noopener noreferrer"
-            className={styles.footerLink}
+            className="flex items-center gap-1 text-xs text-slate-500 hover:text-indigo-400 transition-colors"
           >
-            Documentation <IconExternalLink size={12} />
+            Documentation <ExternalLink size={11} />
           </a>
         </div>
-
       </nav>
 
-      <main className={styles.content}>
+      {/* Main content */}
+      <main className="ml-64 flex-1 overflow-y-auto p-8">
         {children}
       </main>
     </div>
