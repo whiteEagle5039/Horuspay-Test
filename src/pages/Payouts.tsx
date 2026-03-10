@@ -87,7 +87,7 @@ export const Payouts: React.FC = () => {
     setLoading(true); clearResp();
     const res = await PayoutService.listPayouts();
     if (res.success && res.data) {
-      setPayouts(res.data);
+      setPayouts(Array.isArray(res.data) ? res.data : []);
     } else {
       notify('error', res.error || 'Erreur chargement');
     }

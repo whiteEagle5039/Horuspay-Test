@@ -34,7 +34,7 @@ export const WebhooksPage: React.FC = () => {
   const loadWebhooks = async () => {
     setLoading(true);
     const res = await WebhookService.listWebhooks();
-    if (res.success && res.data) setWebhooks(res.data);
+    if (res.success && res.data) setWebhooks(Array.isArray(res.data) ? res.data : []);
     setResponse(res.raw ?? res.data);
     setLoading(false);
   };
@@ -42,7 +42,7 @@ export const WebhooksPage: React.FC = () => {
   const loadApiKeys = async () => {
     setLoading(true);
     const res = await ApiKeyService.listApiKeys();
-    if (res.success && res.data) setApiKeys(res.data);
+    if (res.success && res.data) setApiKeys(Array.isArray(res.data) ? res.data : []);
     setResponse(res.raw ?? res.data);
     setLoading(false);
   };

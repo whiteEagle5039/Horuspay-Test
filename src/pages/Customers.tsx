@@ -59,7 +59,7 @@ export const Customers: React.FC = () => {
     setLoading(true); clearResp();
     const res = await CustomerService.listCustomers();
     if (res.success && res.data) {
-      setCustomers(res.data);
+      setCustomers(Array.isArray(res.data) ? res.data : []);
     } else {
       notify('error', res.error || 'Erreur chargement');
     }

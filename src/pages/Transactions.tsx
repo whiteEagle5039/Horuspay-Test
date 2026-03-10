@@ -52,7 +52,7 @@ export const Transactions: React.FC = () => {
     clearResp();
     const res = await TransactionService.listTransactions();
     if (res.success && res.data) {
-      setTransactions(res.data);
+      setTransactions(Array.isArray(res.data) ? res.data : []);
     } else {
       notify('error', res.error || 'Erreur chargement');
     }

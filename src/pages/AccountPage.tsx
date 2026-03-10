@@ -52,7 +52,7 @@ export const AccountPage: React.FC = () => {
   const loadAccounts = async () => {
     setLoading(true); setResponse(null);
     const res = await AccountService.listAccounts();
-    if (res.success && res.data) setAccounts(res.data);
+    if (res.success && res.data) setAccounts(Array.isArray(res.data) ? res.data : []);
     else notify('error', res.error || 'Erreur chargement');
     setResponse(res.raw ?? res.data);
     setLoading(false);

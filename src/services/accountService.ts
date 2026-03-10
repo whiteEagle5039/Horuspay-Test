@@ -1,10 +1,11 @@
 import { Account } from 'horuspay-node';
-import { extractError, toPlainObject, type ServiceResult } from './_helpers';
+import { extractError, toPlainObject, extractCollection, type ServiceResult } from './_helpers';
 
 export async function listAccounts(params?: Record<string, any>): Promise<ServiceResult> {
   try {
     const result = await Account.all(params);
-    return { success: true, data: toPlainObject(result) };
+    const { items, raw } = extractCollection(result);
+    return { success: true, data: items, raw };
   } catch (e: any) {
     const { message, details } = extractError(e);
     return { success: false, error: message, details };

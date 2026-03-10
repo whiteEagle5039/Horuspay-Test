@@ -1,5 +1,5 @@
 import { Payout } from 'horuspay-node';
-import { extractError, toPlainObject, type ServiceResult } from './_helpers';
+import { extractError, toPlainObject, extractCollection, type ServiceResult } from './_helpers';
 
 export async function createPayout(data: Record<string, any>): Promise<ServiceResult> {
   try {
@@ -14,7 +14,8 @@ export async function createPayout(data: Record<string, any>): Promise<ServiceRe
 export async function listPayouts(params?: Record<string, any>): Promise<ServiceResult> {
   try {
     const result = await Payout.all(params);
-    return { success: true, data: toPlainObject(result) };
+    const { items, raw } = extractCollection(result);
+    return { success: true, data: items, raw };
   } catch (e: any) {
     const { message, details } = extractError(e);
     return { success: false, error: message, details };

@@ -50,3 +50,34 @@ export function toPlainObject(obj: any): any {
   }
   return result;
 }
+
+/**
+ * Extract a collection (array) from an SDK .all() result.
+ * The SDK returns a HorusPayObject with keys like "v1/transactions", "data", or the items
+ * directly as an array. This helper normalizes it.
+ */
+export function extractCollection(obj: any): { items: any[]; meta?: any; raw: any } {
+  const plain = toPlainObject(obj);
+
+  // Already an array
+  if (Array.isArray(plain)) {
+    return { items: plain, raw: plain };
+  }
+
+  // Look for known collection keys
+  if (plain && typeof plain === 'object') {
+    // Check for "data" key (standard API response)
+    if (Array.isArray(plain.data)) {
+      return { items: plain.data, meta: plain.meta, raw: plain };
+    }
+    // Check for versioned keys like "v1/transactions"
+    for (const key of Object.keys(plain)) {
+      if (Array.isArray(plain[key])) {
+        return { items: plain[key], meta: plain.meta, raw: plain };
+      }
+    }
+  }
+
+  // Fallback: wrap in array or return empty
+  return { items: plain ? [plain] : [], raw: plain };
+}
