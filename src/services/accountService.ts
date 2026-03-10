@@ -1,61 +1,53 @@
-import { Account } from 'horuspay';
-import type { ApiResponse, Account as AccountType, AccountData } from '../types';
-import { extractError, extractList, extractObject } from './_helpers';
+import { Account } from 'horuspay-node';
+import { extractError, toPlainObject, type ServiceResult } from './_helpers';
 
-export const listAccounts = async (
-  filters?: Record<string, unknown>
-): Promise<ApiResponse<AccountType[]>> => {
+export async function listAccounts(params?: Record<string, any>): Promise<ServiceResult> {
   try {
-    const raw = await Account.all(filters);
-    return { success: true, data: extractList<AccountType>(raw), raw };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
+    const result = await Account.all(params);
+    return { success: true, data: toPlainObject(result) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
   }
-};
+}
 
-export const retrieveAccount = async (
-  id: number | string
-): Promise<ApiResponse<AccountType>> => {
+export async function retrieveAccount(id: string | number): Promise<ServiceResult> {
   try {
-    const raw = await Account.retrieve(id);
-    return { success: true, data: extractObject<AccountType>(raw), raw };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
+    const result = await Account.retrieve(id);
+    return { success: true, data: toPlainObject(result) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
   }
-};
+}
 
-export const createAccount = async (
-  data: AccountData
-): Promise<ApiResponse<AccountType>> => {
+export async function createAccount(data: Record<string, any>): Promise<ServiceResult> {
   try {
-    const raw = await Account.create(data);
-    return { success: true, data: extractObject<AccountType>(raw), raw };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
+    const result = await Account.create(data);
+    return { success: true, data: toPlainObject(result) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
   }
-};
+}
 
-export const updateAccount = async (
-  id: number | string,
-  data: Partial<AccountData>
-): Promise<ApiResponse<AccountType>> => {
+export async function updateAccount(id: string | number, data: Record<string, any>): Promise<ServiceResult> {
   try {
-    const raw = await Account.update(id, data);
-    return { success: true, data: extractObject<AccountType>(raw), raw };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
+    const result = await Account.update(id, data);
+    return { success: true, data: toPlainObject(result) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
   }
-};
+}
 
-export const inviteToAccount = async (
-  id: number | string,
-  email: string
-): Promise<ApiResponse<unknown>> => {
+export async function inviteToAccount(id: string | number, email: string): Promise<ServiceResult> {
   try {
     const account = await Account.retrieve(id);
-    const raw = await account.invite({ email });
-    return { success: true, data: extractObject(raw), raw };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
+    const result = await account.invite({ email });
+    return { success: true, data: toPlainObject(result) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
   }
-};
+}

@@ -1,84 +1,74 @@
-import { Payout as HPPayout } from 'horuspay';
-import type { PayoutData, ApiResponse, Payout } from '../types';
-import { extractError, extractList, extractObject } from './_helpers';
+import { Payout } from 'horuspay-node';
+import { extractError, toPlainObject, type ServiceResult } from './_helpers';
 
-export const createPayout = async (
-  data: PayoutData
-): Promise<ApiResponse<Payout>> => {
+export async function createPayout(data: Record<string, any>): Promise<ServiceResult> {
   try {
-    const raw = await HPPayout.create(data);
-    return { success: true, data: extractObject<Payout>(raw), raw };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
+    const result = await Payout.create(data);
+    return { success: true, data: toPlainObject(result) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
   }
-};
+}
 
-export const listPayouts = async (
-  filters?: Record<string, unknown>
-): Promise<ApiResponse<Payout[]>> => {
+export async function listPayouts(params?: Record<string, any>): Promise<ServiceResult> {
   try {
-    const raw = await HPPayout.all(filters);
-    return { success: true, data: extractList<Payout>(raw), raw };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
+    const result = await Payout.all(params);
+    return { success: true, data: toPlainObject(result) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
   }
-};
+}
 
-export const retrievePayout = async (
-  id: number | string
-): Promise<ApiResponse<Payout>> => {
+export async function retrievePayout(id: string | number): Promise<ServiceResult> {
   try {
-    const raw = await HPPayout.retrieve(id);
-    return { success: true, data: extractObject<Payout>(raw), raw };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
+    const result = await Payout.retrieve(id);
+    return { success: true, data: toPlainObject(result) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
   }
-};
+}
 
-export const updatePayout = async (
-  id: number | string,
-  data: Partial<PayoutData>
-): Promise<ApiResponse<Payout>> => {
+export async function updatePayout(id: string | number, data: Record<string, any>): Promise<ServiceResult> {
   try {
-    const raw = await HPPayout.update(id, data);
-    return { success: true, data: extractObject<Payout>(raw), raw };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
+    const result = await Payout.update(id, data);
+    return { success: true, data: toPlainObject(result) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
   }
-};
+}
 
-export const payPayout = async (
-  id: number | string
-): Promise<ApiResponse<unknown>> => {
+export async function deletePayout(id: string | number): Promise<ServiceResult> {
   try {
-    const payout = await HPPayout.retrieve(id);
-    const raw = await payout.pay();
-    return { success: true, data: extractObject(raw), raw };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
-  }
-};
-
-export const deletePayout = async (
-  id: number | string
-): Promise<ApiResponse<void>> => {
-  try {
-    const payout = await HPPayout.retrieve(id);
+    const payout = await Payout.retrieve(id);
     await payout.delete();
     return { success: true };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
   }
-};
+}
 
-export const createPayoutBatch = async (
-  payouts: PayoutData[],
-  params?: Record<string, unknown>
-): Promise<ApiResponse<unknown>> => {
+export async function payPayout(id: string | number): Promise<ServiceResult> {
   try {
-    const raw = await HPPayout.createBatch(payouts, params);
-    return { success: true, data: extractObject(raw), raw };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
+    const payout = await Payout.retrieve(id);
+    const result = await payout.pay();
+    return { success: true, data: toPlainObject(result) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
   }
-};
+}
+
+export async function createPayoutBatch(payouts: Record<string, any>[], params?: Record<string, any>): Promise<ServiceResult> {
+  try {
+    const result = await Payout.createBatch(payouts, params);
+    return { success: true, data: toPlainObject(result) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
+  }
+}

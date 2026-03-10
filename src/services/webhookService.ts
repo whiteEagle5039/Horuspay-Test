@@ -1,74 +1,68 @@
-import { Webhook } from 'horuspay';
-import type { ApiResponse, Webhook as WebhookType, WebhookData } from '../types';
-import { extractError, extractList, extractObject } from './_helpers';
+import { Webhook } from 'horuspay-node';
+import { extractError, toPlainObject, type ServiceResult } from './_helpers';
 
-export const createWebhook = async (
-  data: WebhookData
-): Promise<ApiResponse<WebhookType>> => {
+export async function createWebhook(data: Record<string, any>): Promise<ServiceResult> {
   try {
-    const raw = await Webhook.create(data);
-    return { success: true, data: extractObject<WebhookType>(raw), raw };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
+    const result = await Webhook.create(data);
+    return { success: true, data: toPlainObject(result) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
   }
-};
+}
 
-export const listWebhooks = async (
-  filters?: Record<string, unknown>
-): Promise<ApiResponse<WebhookType[]>> => {
+export async function listWebhooks(params?: Record<string, any>): Promise<ServiceResult> {
   try {
-    const raw = await Webhook.all(filters);
-    return { success: true, data: extractList<WebhookType>(raw), raw };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
+    const result = await Webhook.all(params);
+    return { success: true, data: toPlainObject(result) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
   }
-};
+}
 
-export const retrieveWebhook = async (
-  id: number | string
-): Promise<ApiResponse<WebhookType>> => {
+export async function retrieveWebhook(id: string | number): Promise<ServiceResult> {
   try {
-    const raw = await Webhook.retrieve(id);
-    return { success: true, data: extractObject<WebhookType>(raw), raw };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
+    const result = await Webhook.retrieve(id);
+    return { success: true, data: toPlainObject(result) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
   }
-};
+}
 
-export const updateWebhook = async (
-  id: number | string,
-  data: Partial<WebhookData>
-): Promise<ApiResponse<WebhookType>> => {
+export async function updateWebhook(id: string | number, data: Record<string, any>): Promise<ServiceResult> {
   try {
-    const raw = await Webhook.update(id, data);
-    return { success: true, data: extractObject<WebhookType>(raw), raw };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
+    const result = await Webhook.update(id, data);
+    return { success: true, data: toPlainObject(result) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
   }
-};
+}
 
-export const deleteWebhook = async (
-  id: number | string
-): Promise<ApiResponse<void>> => {
+export async function deleteWebhook(id: string | number): Promise<ServiceResult> {
   try {
     const webhook = await Webhook.retrieve(id);
     await webhook.delete();
     return { success: true };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
   }
-};
+}
 
-export const verifyWebhookSignature = (
+export function verifyWebhookSignature(
   payload: string,
   header: string,
   secret: string,
-  tolerance?: number
-): ApiResponse<{ valid: boolean }> => {
+  tolerance?: number,
+): ServiceResult {
   try {
     Webhook.constructEvent(payload, header, secret, tolerance);
     return { success: true, data: { valid: true } };
-  } catch (e) {
-    return { success: false, ...extractError(e), data: { valid: false } };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
   }
-};
+}

@@ -1,102 +1,52 @@
-// ============================================================
-// Helpers SDK — alignés avec le comportement réel de HorusPay
-// ============================================================
-//
-// COMPORTEMENT SDK (source confirmé) :
-//   - _retrieve()  → retourne déjà l'objet (object[className])
-//   - _create()    → retourne déjà l'objet (object[className])
-//   - _update()    → retourne déjà l'objet (object[className])
-//   - _all()       → retourne HorusPayObject | HorusPayObject[]
-//                    (peut être array direct OU { data: [...], pagination: {...} })
-//
-// Les propriétés sont dynamiques sur HorusPayObject → cast via Object.assign
-// ============================================================
+import { HorusPayError } from 'horuspay-node';
 
-/**
- * Extrait les informations d'erreur d'une exception SDK HorusPay.
- * L'erreur est une instance de ApiConnectionError ou InvalidRequest.
- */
-export function extractError(e: unknown): {
-  error: string;
-  details?: Record<string, string[]>;
-} {
-  if (e && typeof e === 'object') {
-    const err = e as Record<string, unknown>;
-
-    // Message d'erreur API (ex: "Email already taken")
-    const message =
-      (err['errorMessage'] as string) ||
-      (err['message'] as string) ||
-      'Une erreur inattendue est survenue';
-
-    // Erreurs de validation (ex: { email: ["is invalid"] })
-    const details = err['errors'] as Record<string, string[]> | undefined;
-
-    return { error: message, details };
-  }
-  return { error: 'Erreur inconnue' };
+export interface ServiceResult {
+  success: boolean;
+  data?: any;
+  error?: string;
+  details?: any;
+  raw?: any;
 }
 
 /**
- * Extrait un objet unique retourné par retrieve/create/update.
- * Le SDK retourne déjà l'objet métier directement (après extraction de object[className]).
- * On convertit le HorusPayObject dynamique en objet JS pur via sérialisation.
+ * Extract error information from a caught exception.
+ * If it's a HorusPayError, pull errorMessage, errors, and model.
+ * Otherwise fall back to e.message.
  */
-export function extractObject<T>(raw: unknown): T {
-  if (!raw || typeof raw !== 'object') return raw as T;
+export function extractError(e: any): { message: string; details: any } {
+  if (e instanceof HorusPayError) {
+    return {
+      message: e.errorMessage || e.message || 'An unexpected error occurred',
+      details: e.errors ?? null,
+    };
+  }
+  return {
+    message: e?.message || 'An unexpected error occurred',
+    details: null,
+  };
+}
 
-  // HorusPayObject a des propriétés dynamiques — on les collecte
-  const result: Record<string, unknown> = {};
-  const obj = raw as Record<string, unknown>;
+/**
+ * Convert a HorusPayObject (or any SDK object) to a plain JS object
+ * by spreading its attributes. Handles nested objects and arrays recursively.
+ */
+export function toPlainObject(obj: any): any {
+  if (obj === null || obj === undefined) return obj;
 
+  // Primitives
+  if (typeof obj !== 'object') return obj;
+
+  // Arrays — recurse into each element
+  if (Array.isArray(obj)) {
+    return obj.map((item) => toPlainObject(item));
+  }
+
+  // HorusPayObject or plain object — collect non-function own properties
+  const result: Record<string, any> = {};
   for (const key of Object.keys(obj)) {
     const val = obj[key];
-    if (typeof val !== 'function') {
-      result[key] = val;
-    }
+    if (typeof val === 'function') continue;
+    result[key] = toPlainObject(val);
   }
-
-  return result as T;
-}
-
-/**
- * Extrait une liste retournée par .all().
- * Le SDK peut retourner :
- *   - un array directement → [item1, item2, ...]
- *   - un objet wrapper    → { data: [...], pagination: {...} }
- *   - un objet unique (rare)
- */
-export function extractList<T>(raw: unknown): T[] {
-  if (!raw) return [];
-
-  // Cas 1 : array direct
-  if (Array.isArray(raw)) {
-    return raw.map((item) => extractObject<T>(item));
-  }
-
-  // Cas 2 : objet wrapper { data: [...] }
-  const obj = raw as Record<string, unknown>;
-  if (obj['data'] && Array.isArray(obj['data'])) {
-    return (obj['data'] as unknown[]).map((item) => extractObject<T>(item));
-  }
-
-  // Cas 3 : objet unique (edge case)
-  const single = extractObject<T>(raw);
-  if (single && typeof single === 'object' && Object.keys(single).length > 0) {
-    return [single];
-  }
-
-  return [];
-}
-
-/**
- * Formate un message d'erreur lisible à partir des détails de validation.
- */
-export function formatValidationErrors(
-  details?: Record<string, string[]>
-): string | undefined {
-  if (!details) return undefined;
-  return Object.entries(details)
-    .map(([field, msgs]) => `${field}: ${msgs.join(', ')}`)
-    .join(' | ');
+  return result;
 }

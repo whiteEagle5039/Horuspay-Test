@@ -1,120 +1,105 @@
-import { Transaction as HPTransaction } from 'horuspay';
-import type {
-  TransactionData,
-  ApiResponse,
-  Transaction,
-  TransactionStatus_Detail,
-} from '../types';
-import { extractError, extractList, extractObject } from './_helpers';
+import { Transaction } from 'horuspay-node';
+import { extractError, toPlainObject, type ServiceResult } from './_helpers';
 
-export const createTransaction = async (
-  data: TransactionData
-): Promise<ApiResponse<Transaction>> => {
+export async function createTransaction(data: Record<string, any>): Promise<ServiceResult> {
   try {
-    const raw = await HPTransaction.create(data);
-    return { success: true, data: extractObject<Transaction>(raw), raw };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
+    const result = await Transaction.create(data);
+    return { success: true, data: toPlainObject(result) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
   }
-};
+}
 
-export const listTransactions = async (
-  filters?: Record<string, unknown>
-): Promise<ApiResponse<Transaction[]>> => {
+export async function listTransactions(params?: Record<string, any>): Promise<ServiceResult> {
   try {
-    const raw = await HPTransaction.all(filters);
-    return { success: true, data: extractList<Transaction>(raw), raw };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
+    const result = await Transaction.all(params);
+    return { success: true, data: toPlainObject(result) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
   }
-};
+}
 
-export const retrieveTransaction = async (
-  id: number | string
-): Promise<ApiResponse<Transaction>> => {
+export async function retrieveTransaction(id: string | number): Promise<ServiceResult> {
   try {
-    const raw = await HPTransaction.retrieve(id);
-    return { success: true, data: extractObject<Transaction>(raw), raw };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
+    const result = await Transaction.retrieve(id);
+    return { success: true, data: toPlainObject(result) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
   }
-};
+}
 
-export const updateTransaction = async (
-  id: number | string,
-  data: Partial<TransactionData>
-): Promise<ApiResponse<Transaction>> => {
+export async function updateTransaction(id: string | number, data: Record<string, any>): Promise<ServiceResult> {
   try {
-    const raw = await HPTransaction.update(id, data);
-    return { success: true, data: extractObject<Transaction>(raw), raw };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
+    const result = await Transaction.update(id, data);
+    return { success: true, data: toPlainObject(result) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
   }
-};
+}
 
-export const payTransaction = async (
-  id: number | string
-): Promise<ApiResponse<unknown>> => {
+export async function deleteTransaction(id: string | number): Promise<ServiceResult> {
   try {
-    const tx = await HPTransaction.retrieve(id);
-    const raw = await tx.pay();
-    return { success: true, data: extractObject(raw), raw };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
-  }
-};
-
-export const generateToken = async (
-  id: number | string
-): Promise<ApiResponse<unknown>> => {
-  try {
-    const tx = await HPTransaction.retrieve(id);
-    const raw = await tx.generateToken();
-    return { success: true, data: extractObject(raw), raw };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
-  }
-};
-
-export const getTransactionStatus = async (
-  id: number | string
-): Promise<ApiResponse<TransactionStatus_Detail>> => {
-  try {
-    const tx = await HPTransaction.retrieve(id);
-    const statusRaw = await tx.getStatus();
-    const detail: TransactionStatus_Detail = {
-      wasPaid:              tx.wasPaid(),
-      wasRefunded:          tx.wasRefunded(),
-      wasPartiallyRefunded: tx.wasPartiallyRefunded(),
-      status:               (tx as unknown as Record<string,string>).status,
-      raw:                  statusRaw,
-    };
-    return { success: true, data: detail, raw: statusRaw };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
-  }
-};
-
-export const refundTransaction = async (
-  id: number | string
-): Promise<ApiResponse<unknown>> => {
-  try {
-    const tx = await HPTransaction.retrieve(id);
-    const raw = await tx.refund();
-    return { success: true, data: extractObject(raw), raw };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
-  }
-};
-
-export const deleteTransaction = async (
-  id: number | string
-): Promise<ApiResponse<void>> => {
-  try {
-    const tx = await HPTransaction.retrieve(id);
+    const tx = await Transaction.retrieve(id);
     await tx.delete();
     return { success: true };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
   }
-};
+}
+
+export async function payTransaction(id: string | number): Promise<ServiceResult> {
+  try {
+    const tx = await Transaction.retrieve(id);
+    const result = await tx.pay();
+    return { success: true, data: toPlainObject(result) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
+  }
+}
+
+export async function getTransactionStatus(id: string | number): Promise<ServiceResult> {
+  try {
+    const tx = await Transaction.retrieve(id);
+    const statusResult = await tx.getStatus();
+    return {
+      success: true,
+      data: {
+        ...toPlainObject(statusResult),
+        wasPaid: tx.wasPaid(),
+        wasRefunded: tx.wasRefunded(),
+        wasPartiallyRefunded: tx.wasPartiallyRefunded(),
+      },
+    };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
+  }
+}
+
+export async function generateToken(id: string | number): Promise<ServiceResult> {
+  try {
+    const tx = await Transaction.retrieve(id);
+    const result = await tx.generateToken();
+    return { success: true, data: toPlainObject(result) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
+  }
+}
+
+export async function refundTransaction(id: string | number): Promise<ServiceResult> {
+  try {
+    const tx = await Transaction.retrieve(id);
+    const result = await tx.refund();
+    return { success: true, data: toPlainObject(result) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
+  }
+}

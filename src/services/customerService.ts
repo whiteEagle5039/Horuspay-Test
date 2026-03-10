@@ -1,60 +1,53 @@
-import { Customer as HPCustomer } from 'horuspay';
-import type { CustomerData, ApiResponse, Customer } from '../types';
-import { extractError, extractList, extractObject } from './_helpers';
+import { Customer } from 'horuspay-node';
+import { extractError, toPlainObject, type ServiceResult } from './_helpers';
 
-export const createCustomer = async (
-  data: CustomerData
-): Promise<ApiResponse<Customer>> => {
+export async function createCustomer(data: Record<string, any>): Promise<ServiceResult> {
   try {
-    const raw = await HPCustomer.create(data);
-    return { success: true, data: extractObject<Customer>(raw), raw };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
+    const result = await Customer.create(data);
+    return { success: true, data: toPlainObject(result) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
   }
-};
+}
 
-export const listCustomers = async (
-  filters?: Record<string, unknown>
-): Promise<ApiResponse<Customer[]>> => {
+export async function listCustomers(params?: Record<string, any>): Promise<ServiceResult> {
   try {
-    const raw = await HPCustomer.all(filters);
-    return { success: true, data: extractList<Customer>(raw), raw };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
+    const result = await Customer.all(params);
+    return { success: true, data: toPlainObject(result) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
   }
-};
+}
 
-export const retrieveCustomer = async (
-  id: number | string
-): Promise<ApiResponse<Customer>> => {
+export async function retrieveCustomer(id: string | number): Promise<ServiceResult> {
   try {
-    const raw = await HPCustomer.retrieve(id);
-    return { success: true, data: extractObject<Customer>(raw), raw };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
+    const result = await Customer.retrieve(id);
+    return { success: true, data: toPlainObject(result) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
   }
-};
+}
 
-export const updateCustomer = async (
-  id: number | string,
-  data: Partial<CustomerData>
-): Promise<ApiResponse<Customer>> => {
+export async function updateCustomer(id: string | number, data: Record<string, any>): Promise<ServiceResult> {
   try {
-    const raw = await HPCustomer.update(id, data);
-    return { success: true, data: extractObject<Customer>(raw), raw };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
+    const result = await Customer.update(id, data);
+    return { success: true, data: toPlainObject(result) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
   }
-};
+}
 
-export const deleteCustomer = async (
-  id: number | string
-): Promise<ApiResponse<void>> => {
+export async function deleteCustomer(id: string | number): Promise<ServiceResult> {
   try {
-    const customer = await HPCustomer.retrieve(id);
+    const customer = await Customer.retrieve(id);
     await customer.delete();
     return { success: true };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
   }
-};
+}

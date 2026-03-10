@@ -1,23 +1,22 @@
-import { ApiKey } from 'horuspay';
-import type { ApiResponse, ApiKey as ApiKeyType } from '../types';
-import { extractError, extractList, extractObject } from './_helpers';
+import { ApiKey } from 'horuspay-node';
+import { extractError, toPlainObject, type ServiceResult } from './_helpers';
 
-export const listApiKeys = async (
-  filters?: Record<string, unknown>
-): Promise<ApiResponse<ApiKeyType[]>> => {
+export async function listApiKeys(params?: Record<string, any>): Promise<ServiceResult> {
   try {
-    const raw = await ApiKey.all(filters);
-    return { success: true, data: extractList<ApiKeyType>(raw), raw };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
+    const result = await ApiKey.all(params);
+    return { success: true, data: toPlainObject(result) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
   }
-};
+}
 
-export const regenerateApiKeys = async (): Promise<ApiResponse<ApiKeyType>> => {
+export async function regenerateApiKeys(): Promise<ServiceResult> {
   try {
-    const raw = await ApiKey.regenerate();
-    return { success: true, data: extractObject<ApiKeyType>(raw), raw };
-  } catch (e) {
-    return { success: false, ...extractError(e) };
+    const result = await ApiKey.regenerate();
+    return { success: true, data: toPlainObject(result) };
+  } catch (e: any) {
+    const { message, details } = extractError(e);
+    return { success: false, error: message, details };
   }
-};
+}
