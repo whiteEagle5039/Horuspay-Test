@@ -30,7 +30,7 @@ export interface HorusPayConfig {
   publicKey: string;       // horus_pay_pub_*
   apiBase?: string;        // Custom API base URL
   environment: 'sandbox' | 'production' | 'development';
-  accountId: string | number;
+  accountId?: string | number;
   apiVersion?: string;     // e.g. 'v1'
 }
 

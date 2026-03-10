@@ -21,7 +21,7 @@ export const Setup: React.FC = () => {
   const [apiBase, setApiBase]           = useState('');
   const [environment, setEnvironment]   = useState<Env>('sandbox');
   const [accountId, setAccountId]       = useState('');
-  const [apiVersion, setApiVersion]     = useState('');
+  const [apiVersion, setApiVersion]     = useState('v1');
   const [message, setMessage]           = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [loading, setLoading]           = useState(false);
 
@@ -41,8 +41,8 @@ export const Setup: React.FC = () => {
     e.preventDefault();
     setLoading(true);
 
-    if (!secretKey.trim() || !publicKey.trim() || !accountId.trim()) {
-      setMessage({ type: 'error', text: 'Les champs obligatoires sont requis' });
+    if (!secretKey.trim() && !publicKey.trim()) {
+      setMessage({ type: 'error', text: 'Au moins une clé API (secrète ou publique) est requise' });
       setLoading(false);
       return;
     }
@@ -52,7 +52,7 @@ export const Setup: React.FC = () => {
         secretKey: secretKey.trim(),
         publicKey: publicKey.trim(),
         environment,
-        accountId: accountId.trim(),
+        ...(accountId.trim() && { accountId: accountId.trim() }),
         ...(apiBase.trim() && { apiBase: apiBase.trim() }),
         ...(apiVersion.trim() && { apiVersion: apiVersion.trim() }),
       };
@@ -103,12 +103,11 @@ export const Setup: React.FC = () => {
           />
 
           <FormInput
-            label="Clé Publique (Public Key)"
+            label="Clé Publique (Public Key) — optionnel"
             type="password"
             value={publicKey}
             onChange={(e: any) => setPublicKey(e.target.value)}
             placeholder="horus_pay_pub_..."
-            required
           />
 
           <FormInput
@@ -157,12 +156,11 @@ export const Setup: React.FC = () => {
           <div className="border-t border-slate-700 my-4" />
 
           <FormInput
-            label="ID du Compte"
+            label="ID du Compte (optionnel — utile seulement avec auth JWT multi-comptes)"
             type="text"
             value={accountId}
             onChange={(e: any) => setAccountId(e.target.value)}
             placeholder="votre-account-id"
-            required
           />
 
           <FormInput

@@ -50,7 +50,11 @@ export function saveHorusPayConfig(config: HorusPayConfig): void {
   localStorage.setItem(KEY_SECRET_KEY, config.secretKey);
   localStorage.setItem(KEY_PUBLIC_KEY, config.publicKey);
   localStorage.setItem(KEY_ENV, config.environment);
-  localStorage.setItem(KEY_ACCOUNT_ID, String(config.accountId));
+  if (config.accountId) {
+    localStorage.setItem(KEY_ACCOUNT_ID, String(config.accountId));
+  } else {
+    localStorage.removeItem(KEY_ACCOUNT_ID);
+  }
   if (config.apiBase) {
     localStorage.setItem(KEY_API_BASE, config.apiBase);
   } else {
